@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Magic Cube 3D</title>
+    <link rel="stylesheet" href="./src/style.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
+          "@tweenjs/tween.js": "https://unpkg.com/@tweenjs/tween.js@23.1.1/dist/tween.esm.js",
+          "cubejs": "https://jspm.dev/cubejs"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <nav class="navbar">
+      <button id="navHome" class="active">Home</button>
+      <button id="navSolve">3x3 Solve</button>
+    </nav>
+    
+    <div id="home-view">
+      <div id="uicontainer">
+        <h1>Magic Cube</h1>
+        <div class="controls">
+          <button id="shuffleBtn">Shuffle</button>
+          <button id="resetBtn">Reset</button>
+        </div>
+      </div>
+      <div class="slice-controls">
+        <button id="btnL">L</button>
+        <button id="btnM">M</button>
+        <button id="btnR">R</button>
+        <button id="btnU">U</button>
+        <button id="btnE">E</button>
+        <button id="btnD">D</button>
+        <button id="btnF">F</button>
+        <button id="btnS">S</button>
+        <button id="btnB">B</button>
+      </div>
+    </div>
+
+    <div id="solve-view" class="d-none">
+      <div id="paint-phase">
+        <div class="palette-container" style="top: 1rem;">
+          <h2>Select Color to Paint</h2>
+          <div class="color-palette">
+            <div class="swatch selected" data-color="0xFFFFFF" style="background: #FFFFFF;"></div>
+            <div class="swatch" data-color="0xFFD500" style="background: #FFD500;"></div>
+            <div class="swatch" data-color="0x0051BA" style="background: #0051BA;"></div>
+            <div class="swatch" data-color="0x009E60" style="background: #009E60;"></div>
+            <div class="swatch" data-color="0xC41E3A" style="background: #C41E3A;"></div>
+            <div class="swatch" data-color="0xFF5800" style="background: #FF5800;"></div>
+          </div>
+        </div>
+        
+        <div class="paint-footer">
+          <button id="btnPaintReset" class="action-btn">Reset</button>
+          
+          <div class="cube-rotators">
+            <button id="rotLeft" class="icon-btn">&#8592;</button>
+            <button id="rotUp" class="icon-btn">&#8593;</button>
+            <button id="rotDown" class="icon-btn">&#8595;</button>
+            <button id="rotRight" class="icon-btn">&#8594;</button>
+          </div>
+          
+          <div style="display: flex; gap: 1rem; align-items: center;">
+            <p class="solver-status"></p>
+            <button id="btnStartSolve" class="action-btn primary">Solve!</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="playback-phase" class="d-none">
+        <div class="playback-instruction">
+           <h2 id="humanInstruction">READY TO SOLVE!</h2>
+           <p id="solutionText">Hold your puzzle as shown below, hit "next" to start.</p>
+        </div>
+        
+        <button id="btnSideBack" class="side-nav left-nav" disabled>&lt; Back</button>
+        <button id="btnSideNext" class="side-nav right-nav">Next &gt;</button>
+      </div>
+    </div>
+    
+    <div id="cubeSolvedMsg" class="d-none cube-solved-msg">🎉 CUBE SOLVED!</div>
+    <div id="app"></div>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
