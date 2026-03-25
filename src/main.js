@@ -517,10 +517,21 @@ document.getElementById('rotRight').addEventListener('click', () => rotateWholeC
 document.getElementById('rotUp').addEventListener('click', () => rotateWholeCube('x', -Math.PI / 2));
 document.getElementById('rotDown').addEventListener('click', () => rotateWholeCube('x', Math.PI / 2));
 
+const confirmResetOverlay = document.getElementById('confirmResetOverlay');
 document.getElementById('btnPaintReset').addEventListener('click', () => {
+  confirmResetOverlay.classList.remove('d-none');
+});
+document.getElementById('confirmResetCancel').addEventListener('click', () => {
+  confirmResetOverlay.classList.add('d-none');
+});
+document.getElementById('confirmResetOk').addEventListener('click', () => {
+  confirmResetOverlay.classList.add('d-none');
   scene.traverse(child => {
     if (child.userData.isSticker) child.material.color.setHex(0x555555);
   });
+});
+confirmResetOverlay.addEventListener('click', (e) => {
+  if (e.target === confirmResetOverlay) confirmResetOverlay.classList.add('d-none');
 });
 
 // ==== AUTO SOLVER LOGIC ====
@@ -581,12 +592,39 @@ function getCubeString() {
   return str;
 }
 
+const errorPopupOverlay = document.getElementById('errorPopupOverlay');
+const errorList = document.getElementById('errorList');
+document.getElementById('errorPopupClose').addEventListener('click', () => {
+  errorPopupOverlay.classList.add('d-none');
+});
+errorPopupOverlay.addEventListener('click', (e) => {
+  if (e.target === errorPopupOverlay) errorPopupOverlay.classList.add('d-none');
+});
+
+const HEX_TO_NAME = {
+  0xFFFFFF: 'white', 0xFFD500: 'yellow', 0x0051BA: 'blue',
+  0x009E60: 'green', 0xC41E3A: 'red', 0xFF5800: 'orange',
+  0xDFBD28: 'yellow', 0x2A62C9: 'blue', 0x3DBD62: 'green'
+};
+const EXPECTED_COLORS = [0xFFFFFF, 0xFFD500, 0x0051BA, 0x009E60, 0xC41E3A, 0xFF5800];
+
+function showErrorPopup(messages) {
+  errorList.innerHTML = '';
+  messages.forEach(msg => {
+    const li = document.createElement('li');
+    li.textContent = msg;
+    errorList.appendChild(li);
+  });
+  errorPopupOverlay.classList.remove('d-none');
+  solverStatus.innerText = '';
+}
+
 btnStartSolve.addEventListener('click', () => {
   try {
     solverStatus.innerText = "Validating...";
     
     const colorCounts = {};
-    const unpainted = [];
+    let hasUnpainted = false;
     const paintedPieces = [];
     
     cubies.forEach(cubie => {
@@ -594,7 +632,7 @@ btnStartSolve.addEventListener('click', () => {
       const pieceColors = [];
       stickers.forEach(s => {
         const hex = s.material.color.getHex();
-        if (hex === 0x555555) unpainted.push(cubie);
+        if (hex === 0x555555) hasUnpainted = true;
         else {
           colorCounts[hex] = (colorCounts[hex] || 0) + 1;
           pieceColors.push(hex);
@@ -603,16 +641,46 @@ btnStartSolve.addEventListener('click', () => {
       if (pieceColors.length > 0) paintedPieces.push({ cubie, colors: pieceColors });
     });
 
-    if (unpainted.length > 0) throw new Error("Cube is not fully painted!");
-
-    const colorKeys = Object.keys(colorCounts);
-    if (colorKeys.length !== 6) throw new Error("Cube must use exactly 6 distinct colors.");
-    for (let hex of colorKeys) {
-      if (colorCounts[hex] !== 9) throw new Error("Each color must have exactly 9 tiles!");
+    if (hasUnpainted) {
+      const errors = ['You have unpainted tiles on the cube.'];
+      // Also check color counts for helpful hints
+      EXPECTED_COLORS.forEach(hex => {
+        const name = HEX_TO_NAME[hex];
+        const count = colorCounts[hex] || 0;
+        if (count < 9) errors.push(`You do not have enough ${name} tiles.`);
+        else if (count > 9) errors.push(`You have too many ${name} tiles.`);
+      });
+      showErrorPopup(errors);
+      return;
     }
 
+    // Check color counts
+    const colorErrors = [];
+    EXPECTED_COLORS.forEach(hex => {
+      const name = HEX_TO_NAME[hex];
+      const count = colorCounts[hex] || 0;
+      if (count < 9) colorErrors.push(`You do not have enough ${name} tiles.`);
+      else if (count > 9) colorErrors.push(`You have too many ${name} tiles.`);
+    });
+
+    // Check for colors not in the expected set
+    const usedHexes = Object.keys(colorCounts).map(Number);
+    const unexpectedColors = usedHexes.filter(h => !EXPECTED_COLORS.includes(h));
+    if (unexpectedColors.length > 0) {
+      colorErrors.push('Some tiles use unexpected colors.');
+    }
+
+    if (colorErrors.length > 0) {
+      showErrorPopup(colorErrors);
+      return;
+    }
+
+    // Validate opposite colors on pieces
     const centerPieces = paintedPieces.filter(p => p.colors.length === 1);
-    if (centerPieces.length !== 6) throw new Error("Invalid: missing 6 center pieces.");
+    if (centerPieces.length !== 6) {
+      showErrorPopup(['Invalid center pieces detected.']);
+      return;
+    }
     
     const centerOpposites = new Map();
     centerPieces.forEach(p => {
@@ -627,20 +695,35 @@ btnStartSolve.addEventListener('click', () => {
       if (oppP) centerOpposites.set(p.colors[0], oppP.colors[0]);
     });
 
+    let edgeErrors = 0;
+    let cornerErrors = 0;
     paintedPieces.forEach(p => {
       if (p.colors.length > 1) {
+        let hasError = false;
         for (let i = 0; i < p.colors.length; i++) {
           for (let j = i + 1; j < p.colors.length; j++) {
              const c1 = p.colors[i];
              const c2 = p.colors[j];
              if (centerOpposites.get(c1) === c2) {
-               const hexColorToCSS = (c) => '#' + c.toString(16).padStart(6, '0');
-               throw new Error(`Invalid piece detected! A piece has opposite face colors (${hexColorToCSS(c1)} and ${hexColorToCSS(c2)}).`);
+               hasError = true;
              }
           }
         }
+        if (hasError) {
+          if (p.colors.length === 2) edgeErrors++;
+          else if (p.colors.length === 3) cornerErrors++;
+        }
       }
     });
+
+    const totalPieceErrors = edgeErrors + cornerErrors;
+    if (totalPieceErrors > 0) {
+      const errors = [];
+      if (edgeErrors > 0) errors.push(`${edgeErrors} edge piece(s) have opposite face colors.`);
+      if (cornerErrors > 0) errors.push(`${cornerErrors} corner piece(s) have opposite face colors.`);
+      showErrorPopup(errors);
+      return;
+    }
 
     solverStatus.innerText = "Calculating...";
     const stateStr = getCubeString();
@@ -651,8 +734,8 @@ btnStartSolve.addEventListener('click', () => {
     solutionSteps = [];
     const movesArr = solution.split(' ').filter(m => m);
     for (let m of movesArr) {
-      let face = m[0]; // U, R, F, D, L, B
-      let modifier = m.length > 1 ? m[1] : ''; // '2', ''', or none
+      let face = m[0];
+      let modifier = m.length > 1 ? m[1] : '';
 
       let moveDef = MOVES[face];
       let angle = moveDef[2];
@@ -671,7 +754,7 @@ btnStartSolve.addEventListener('click', () => {
     updatePlaybackUI();
 
   } catch (err) {
-    solverStatus.innerText = "Error: " + err.message;
+    showErrorPopup(['Your puzzle cannot be solved.']);
     console.error(err);
   }
 });

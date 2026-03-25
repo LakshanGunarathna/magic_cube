@@ -387,3 +387,102 @@ button:active {
   cursor: not-allowed;
   pointer-events: none;
 }
+
+.error-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.25s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.error-popup {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 20px;
+  padding: 2rem 2.5rem;
+  max-width: 480px;
+  width: 90%;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
+  animation: popIn 0.3s ease;
+  text-align: center;
+}
+
+@keyframes popIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.error-popup h3 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #b91c1c;
+  margin-bottom: 0.25rem;
+}
+
+.error-popup .error-subtitle {
+  font-size: 0.95rem;
+  color: #1e3a5f;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.error-popup ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.25rem 0;
+  text-align: left;
+}
+
+.error-popup ul li {
+  font-size: 0.95rem;
+  color: #1e3a5f;
+  padding: 0.4rem 0.75rem;
+  margin-bottom: 0.35rem;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
+  border-left: 3px solid #e53e3e;
+}
+
+.error-popup .error-footer {
+  font-size: 0.9rem;
+  color: #4a5568;
+  margin-bottom: 1.25rem;
+  font-style: italic;
+}
+
+.error-popup-btn {
+  background: rgba(255, 255, 255, 0.4) !important;
+  color: #1e3a5f !important;
+  border: 1px solid rgba(255, 255, 255, 0.6) !important;
+  padding: 0.6rem 2.5rem !important;
+  border-radius: 12px !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  cursor: pointer;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
+}
+
+.error-popup-btn:hover {
+  background: rgba(255, 255, 255, 0.55) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12) !important;
+}

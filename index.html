@@ -86,6 +86,28 @@
     </div>
     
     <div id="cubeSolvedMsg" class="d-none cube-solved-msg">🎉 CUBE SOLVED!</div>
+
+    <div id="errorPopupOverlay" class="error-popup-overlay d-none">
+      <div class="error-popup">
+        <h3>⚠️ Your puzzle is not colored correctly</h3>
+        <p class="error-subtitle">You should consider the following:</p>
+        <ul id="errorList"></ul>
+        <p class="error-footer">After fixing the coloring issues hit "Solve!" again.</p>
+        <button id="errorPopupClose" class="error-popup-btn">OK</button>
+      </div>
+    </div>
+
+    <div id="confirmResetOverlay" class="error-popup-overlay d-none">
+      <div class="error-popup">
+        <h3>🔄 Reset Coloring?</h3>
+        <p class="error-subtitle">If you continue your current coloring will be lost.</p>
+        <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1rem;">
+          <button id="confirmResetCancel" class="error-popup-btn">Cancel</button>
+          <button id="confirmResetOk" class="error-popup-btn" style="background: rgba(220, 38, 38, 0.2) !important; border-color: rgba(220, 38, 38, 0.3) !important; color: #b91c1c !important;">Reset</button>
+        </div>
+      </div>
+    </div>
+
     <div id="app"></div>
     <script type="module" src="./src/main.js"></script>
   </body>
