@@ -279,6 +279,7 @@ window.addEventListener('pointerup', (e) => {
   if (currentMode !== 'solve') return;
   if (e.target !== renderer.domElement) return;
   if (!playbackPhase.classList.contains('d-none')) return; // Disallow painting during playback UI
+  if (isAnimating) return; // Prevent painting while checking visibility over uncommitted rotations
 
   const dist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
   if (dist > 5) return;
@@ -289,7 +290,14 @@ window.addEventListener('pointerup', (e) => {
   raycaster.setFromCamera(mouse, camera);
   const intersects = raycaster.intersectObjects(cubeGroup.children, true);
 
-  const hit = intersects.find(i => i.object.userData.isSticker);
+  const hit = intersects.find(i => {
+    if (!i.object.userData.isSticker) return false;
+    const pos = new THREE.Vector3();
+    i.object.getWorldPosition(pos);
+    // Only accept hits on the 3 camera-facing sides (X+, Y+, Z+)
+    return pos.x > 1.4 || pos.y > 1.4 || pos.z > 1.4;
+  });
+
   if (hit) {
     hit.object.material = hit.object.material.clone();
     hit.object.material.color.setHex(selectedColorHex);
