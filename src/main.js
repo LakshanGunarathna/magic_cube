@@ -190,50 +190,88 @@ document.getElementById('resetBtn').addEventListener('click', () => {
 let currentMode = 'home';
 let selectedColorHex = 0xFFFFFF;
 
+const appContainer = document.getElementById('app');
 const homeView = document.getElementById('home-view');
 const solveView = document.getElementById('solve-view');
-const navHome = document.getElementById('navHome');
-const navSolve = document.getElementById('navSolve');
+const comingSoonView = document.getElementById('coming-soon-view');
+const comingSoonTitle = document.getElementById('coming-soon-title');
+
+const navBtns = document.querySelectorAll('.navbar [data-route]');
+
 const paintPhase = document.getElementById('paint-phase');
 const playbackPhase = document.getElementById('playback-phase');
 const solverStatus = document.querySelector('.solver-status');
 const cubeSolvedMsg = document.getElementById('cubeSolvedMsg');
 
-navHome.addEventListener('click', () => setMode('home'));
-navSolve.addEventListener('click', () => setMode('solve'));
-
-function setMode(mode) {
+function handleNavigation(path, addToHistory = true) {
   if (isAnimating) return;
-  currentMode = mode;
+  if (addToHistory) {
+    window.history.pushState({}, '', path);
+  }
+  updateViewBasedOnRoute();
+}
+
+navBtns.forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    handleNavigation(e.currentTarget.getAttribute('data-route'));
+  });
+});
+
+window.addEventListener('popstate', () => {
+  updateViewBasedOnRoute();
+});
+
+function getTitleFromPath(path) {
+  const parts = path.split('/').filter(Boolean);
+  if (parts.length === 0) return '';
+  const lastPart = parts[parts.length - 1];
+  return lastPart.replace(/-/g, ' ').toUpperCase();
+}
+
+function updateViewBasedOnRoute() {
+  const path = decodeURIComponent(window.location.pathname).replace(/\/$/, "");
+  
   if (cubeSolvedMsg) cubeSolvedMsg.classList.add('d-none');
 
-  if (mode === 'home') {
+  // Reset navs
+  navBtns.forEach(btn => btn.classList.remove('active'));
+  // Find active nav and highlight
+  const activeNav = document.querySelector(`.navbar [data-route="${path || '/'}"]`);
+  if (activeNav && activeNav.classList.contains('nav-btn')) {
+    activeNav.classList.add('active');
+  } else if (activeNav) {
+    // If it's a dropdown link, highlighting parent isn't strictly necessary for a quick mock, but let's try
+    const parentDropBtn = activeNav.closest('.dropdown')?.querySelector('.nav-btn');
+    if (parentDropBtn) parentDropBtn.classList.add('active');
+  }
+
+  // Reset views
+  [homeView, solveView, comingSoonView].forEach(v => v.classList.add('d-none'));
+  appContainer.style.display = 'block';
+
+  currentMode = path;
+
+  if (path === '' || path === '/') {
     controls.enableRotate = true;
     controls.enableZoom = true;
-
-    navHome.classList.add('active');
-    navSolve.classList.remove('active');
     homeView.classList.remove('d-none');
-    solveView.classList.add('d-none');
-
+    
     paintPhase.classList.remove('d-none');
     playbackPhase.classList.add('d-none');
     solverStatus.innerText = "";
 
     scene.traverse(child => {
-      if (child.userData.isSticker) {
+      if (child.userData.isSticker && child.userData.originalColor) {
         child.material.color.setHex(child.userData.originalColor);
       }
     });
-  } else if (mode === 'solve') {
+
+  } else if (path === '/solver/3x3x3 cube' || path === '/solver/3x3x3-cube') {
     controls.enableRotate = false;
     controls.enableZoom = false;
-
-    navSolve.classList.add('active');
-    navHome.classList.remove('active');
     solveView.classList.remove('d-none');
-    homeView.classList.add('d-none');
-
+    
     paintPhase.classList.remove('d-none');
     playbackPhase.classList.add('d-none');
     solverStatus.innerText = "";
@@ -243,8 +281,17 @@ function setMode(mode) {
         child.material.color.setHex(0x555555);
       }
     });
+
+  } else {
+    // Other routes go to coming soon
+    appContainer.style.display = 'none';
+    comingSoonTitle.innerText = getTitleFromPath(path) || 'FEATURE';
+    comingSoonView.classList.remove('d-none');
   }
 }
+
+// Initial route
+updateViewBasedOnRoute();
 
 // Swatch Selection
 const swatches = document.querySelectorAll('.swatch');
@@ -276,7 +323,7 @@ window.addEventListener('pointerdown', (e) => {
 });
 
 window.addEventListener('pointerup', (e) => {
-  if (currentMode !== 'solve') return;
+  if (currentMode !== '/solver/3x3x3 cube' && currentMode !== '/solver/3x3x3-cube') return;
   if (e.target !== renderer.domElement) return;
   if (!playbackPhase.classList.contains('d-none')) return; // Disallow painting during playback UI
   if (isAnimating) return; // Prevent painting while checking visibility over uncommitted rotations
