@@ -222,13 +222,14 @@ function getTitleFromPath(path) {
 function updateViewBasedOnRoute() {
   const path = decodeURIComponent(window.location.pathname).replace(/\/$/, "");
 
-  // Reset navs
-  navBtns.forEach(btn => btn.classList.remove('active'));
+  // Reset navs for both top level buttons and dropdown links
+  document.querySelectorAll('.navbar .nav-btn, .navbar [data-route]').forEach(btn => btn.classList.remove('active'));
   // Find active nav and highlight
   const activeNav = document.querySelector(`.navbar [data-route="${path || '/'}"]`);
   if (activeNav && activeNav.classList.contains('nav-btn')) {
     activeNav.classList.add('active');
   } else if (activeNav) {
+    activeNav.classList.add('active'); // highlight the specific dropdown link
     const parentDropBtn = activeNav.closest('.dropdown')?.querySelector('.nav-btn');
     if (parentDropBtn) parentDropBtn.classList.add('active');
   }
