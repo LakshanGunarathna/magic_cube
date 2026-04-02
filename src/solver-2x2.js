@@ -366,8 +366,17 @@ function showErrorPopup(messages) {
   document.getElementById('solver-status-2x2').innerText = '';
 }
 
-function getCubeString2x2() {
-  let getColor = (x, y, z, faceAxis) => {
+function getCubeArray2x2() {
+  const colorMap = {
+    0xDFBD28: 0, 0xFFD500: 0, // D
+    0x3DBD62: 1, 0x009E60: 1, // L
+    0xFF5800: 2,              // B
+    0xFFFFFF: 3,              // U
+    0x2A62C9: 4, 0x0051BA: 4, // R
+    0xC41E3A: 5               // F
+  };
+
+  let getColorIndex = (x, y, z, faceAxis) => {
     const cubie = cubies.find(c => Math.abs(c.position.x - x) < 0.1 && Math.abs(c.position.y - y) < 0.1 && Math.abs(c.position.z - z) < 0.1);
     if (!cubie) throw new Error(`Missing cubie at ${x},${y},${z}`);
 
@@ -381,38 +390,276 @@ function getCubeString2x2() {
       return Math.abs(diff[faceAxis]) > 0.1;
     });
 
-    if (!sticker) return 0x555555;
-    return sticker.material.color.getHex();
+    if (!sticker) return -1;
+    const hex = sticker.material.color.getHex();
+    if (colorMap[hex] === undefined && hex !== 0x555555) throw new Error("Unknown color");
+    return hex === 0x555555 ? -1 : colorMap[hex];
   };
 
-  const centerColors = {
-    [colors.top]: 'U', [colors.right]: 'R', [colors.front]: 'F',
-    [colors.bottom]: 'D', [colors.left]: 'L', [colors.back]: 'B'
-  };
+  const posit = new Array(24);
+  posit[15] = getColorIndex( 0.5,  0.5,  0.5, 'y');
+  posit[14] = getColorIndex(-0.5,  0.5,  0.5, 'y');
+  posit[13] = getColorIndex( 0.5,  0.5, -0.5, 'y');
+  posit[12] = getColorIndex(-0.5,  0.5, -0.5, 'y');
+  
+  posit[3] = getColorIndex( 0.5, -0.5,  0.5, 'y');
+  posit[2] = getColorIndex(-0.5, -0.5,  0.5, 'y');
+  posit[1] = getColorIndex( 0.5, -0.5, -0.5, 'y');
+  posit[0] = getColorIndex(-0.5, -0.5, -0.5, 'y');
 
-  let str = '';
-  for (let z of [-1, 0, 1]) for (let x of [-1, 0, 1]) {
-    if (x===0 || z===0) str += 'U'; else str += centerColors[getColor(x/2, 0.5, z/2, 'y')];
-  }
-  for (let y of [1, 0, -1]) for (let z of [1, 0, -1]) {
-    if (y===0 || z===0) str += 'R'; else str += centerColors[getColor(0.5, y/2, z/2, 'x')];
-  }
-  for (let y of [1, 0, -1]) for (let x of [-1, 0, 1]) {
-    if (y===0 || x===0) str += 'F'; else str += centerColors[getColor(x/2, y/2, 0.5, 'z')];
-  }
-  for (let z of [1, 0, -1]) for (let x of [-1, 0, 1]) {
-    if (x===0 || z===0) str += 'D'; else str += centerColors[getColor(x/2, -0.5, z/2, 'y')];
-  }
-  for (let y of [1, 0, -1]) for (let z of [-1, 0, 1]) {
-    if (y===0 || z===0) str += 'L'; else str += centerColors[getColor(-0.5, y/2, z/2, 'x')];
-  }
-  for (let y of [1, 0, -1]) for (let x of [1, 0, -1]) {
-    if (y===0 || x===0) str += 'B'; else str += centerColors[getColor(x/2, y/2, -0.5, 'z')];
-  }
+  posit[21] = getColorIndex( 0.5,  0.5,  0.5, 'z');
+  posit[20] = getColorIndex(-0.5,  0.5,  0.5, 'z');
+  posit[23] = getColorIndex( 0.5, -0.5,  0.5, 'z');
+  posit[22] = getColorIndex(-0.5, -0.5,  0.5, 'z');
 
-  if (str.includes('undefined')) throw new Error("Cube is not fully painted!");
-  return str;
+  posit[9] = getColorIndex( 0.5,  0.5, -0.5, 'z');
+  posit[8] = getColorIndex(-0.5,  0.5, -0.5, 'z');
+  posit[11] = getColorIndex( 0.5, -0.5, -0.5, 'z');
+  posit[10] = getColorIndex(-0.5, -0.5, -0.5, 'z');
+
+  posit[16] = getColorIndex( 0.5,  0.5,  0.5, 'x');
+  posit[17] = getColorIndex( 0.5,  0.5, -0.5, 'x');
+  posit[18] = getColorIndex( 0.5, -0.5,  0.5, 'x');
+  posit[19] = getColorIndex( 0.5, -0.5, -0.5, 'x');
+
+  posit[4] = getColorIndex(-0.5,  0.5,  0.5, 'x');
+  posit[5] = getColorIndex(-0.5,  0.5, -0.5, 'x');
+  posit[6] = getColorIndex(-0.5, -0.5,  0.5, 'x');
+  posit[7] = getColorIndex(-0.5, -0.5, -0.5, 'x');
+
+  if (posit.includes(-1)) throw new Error("Cube is not fully painted!");
+  return posit;
 }
+
+const Rubiks2x2Solver = (function() {
+    let perm = [];
+    let twst = [];
+    let permmv = [];
+    let twstmv = [];
+    let isInitialized = false;
+    let sol = [];
+
+    // Core piece map from the original logic
+    const piece = [
+        15,16,16,21,21,15,  13,9,9,17,17,13,  14,20,20,4,4,14,  12,5,5,8,8,12,
+        3,23,23,18,18,3,   1,19,19,11,11,1,  2,6,6,22,22,2,    0,10,10,7,7,0
+    ];
+
+    function getprmmv(p, m) {
+        let a, b, c, q;
+        let ps = new Array(8);
+        q = p;
+        for (a = 1; a <= 7; a++) {
+            b = q % a;
+            q = (q - b) / a;
+            for (c = a - 1; c >= b; c--) ps[c + 1] = ps[c];
+            ps[b] = 7 - a;
+        }
+        if (m === 0) {
+            c = ps[0]; ps[0] = ps[1]; ps[1] = ps[3]; ps[3] = ps[2]; ps[2] = c;
+        } else if (m === 1) {
+            c = ps[0]; ps[0] = ps[4]; ps[4] = ps[5]; ps[5] = ps[1]; ps[1] = c;
+        } else if (m === 2) {
+            c = ps[0]; ps[0] = ps[2]; ps[2] = ps[6]; ps[6] = ps[4]; ps[4] = c;
+        }
+        q = 0;
+        for (a = 0; a < 7; a++) {
+            b = 0;
+            for (c = 0; c < 7; c++) {
+                if (ps[c] === a) break;
+                if (ps[c] > a) b++;
+            }
+            q = q * (7 - a) + b;
+        }
+        return q;
+    }
+
+    function gettwsmv(p, m) {
+        let a, b, c, d, q;
+        let ps = new Array(7);
+        q = p;
+        d = 0;
+        for (a = 0; a <= 5; a++) {
+            c = Math.floor(q / 3);
+            b = q - 3 * c;
+            q = c;
+            ps[a] = b;
+            d -= b;
+            if (d < 0) d += 3;
+        }
+        ps[6] = d;
+        if (m === 0) {
+            c = ps[0]; ps[0] = ps[1]; ps[1] = ps[3]; ps[3] = ps[2]; ps[2] = c;
+        } else if (m === 1) {
+            c = ps[0]; ps[0] = ps[4]; ps[4] = ps[5]; ps[5] = ps[1]; ps[1] = c;
+            ps[0] += 2; ps[1]++; ps[5] += 2; ps[4]++;
+        } else if (m === 2) {
+            c = ps[0]; ps[0] = ps[2]; ps[2] = ps[6]; ps[6] = ps[4]; ps[4] = c;
+            ps[2] += 2; ps[0]++; ps[4] += 2; ps[6]++;
+        }
+        q = 0;
+        for (a = 5; a >= 0; a--) {
+            q = q * 3 + (ps[a] % 3);
+        }
+        return q;
+    }
+
+    // Pre-calculate tables to make searching instantaneous
+    function init() {
+        if (isInitialized) return;
+
+        for (let p = 0; p < 5040; p++) {
+            perm[p] = -1;
+            permmv[p] = [];
+            for (let m = 0; m < 3; m++) {
+                permmv[p][m] = getprmmv(p, m);
+            }
+        }
+        perm[0] = 0;
+        for (let l = 0; l <= 6; l++) {
+            for (let p = 0; p < 5040; p++) {
+                if (perm[p] === l) {
+                    for (let m = 0; m < 3; m++) {
+                        let q = p;
+                        for (let c = 0; c < 3; c++) {
+                            q = permmv[q][m];
+                            if (perm[q] === -1) perm[q] = l + 1;
+                        }
+                    }
+                }
+            }
+        }
+
+        for (let p = 0; p < 729; p++) {
+            twst[p] = -1;
+            twstmv[p] = [];
+            for (let m = 0; m < 3; m++) {
+                twstmv[p][m] = gettwsmv(p, m);
+            }
+        }
+        twst[0] = 0;
+        for (let l = 0; l <= 5; l++) {
+            for (let p = 0; p < 729; p++) {
+                if (twst[p] === l) {
+                    for (let m = 0; m < 3; m++) {
+                        let q = p;
+                        for (let c = 0; c < 3; c++) {
+                            q = twstmv[q][m];
+                            if (twst[q] === -1) twst[q] = l + 1;
+                        }
+                    }
+                }
+            }
+        }
+        isInitialized = true;
+    }
+
+    function search(d, q, t, l, lm) {
+        if (l === 0) {
+            if (q === 0 && t === 0) return true;
+        } else {
+            if (perm[q] > l || twst[t] > l) return false;
+            for (let m = 0; m < 3; m++) {
+                if (m !== lm) {
+                    let p = q;
+                    let s = t;
+                    for (let a = 0; a < 3; a++) {
+                        p = permmv[p][m];
+                        s = twstmv[s][m];
+                        sol[d] = 10 * m + a;
+                        if (search(d + 1, p, s, l - 1, m)) return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    function solve(posit) {
+        if (posit.length !== 24) return "Error: Cube state must contain exactly 24 facelets.";
+        
+        init(); // Ensure tables are built (takes < 100ms on first run)
+
+        let adj = Array.from({ length: 6 }, () => Array(6).fill(0));
+        
+        // Count adjacent pairs
+        for (let a = 0; a < 48; a += 2) {
+            if (posit[piece[a]] <= 5 && posit[piece[a + 1]] <= 5) {
+                adj[posit[piece[a]]][posit[piece[a + 1]]]++;
+            }
+        }
+
+        let opp = [];
+        for (let a = 0; a < 6; a++) {
+            for (let b = 0; b < 6; b++) {
+                if (a !== b && adj[a][b] + adj[b][a] === 0) {
+                    opp[a] = b;
+                    opp[b] = a;
+                }
+            }
+        }
+
+        let ps = [];
+        let tws = [];
+        let a = 0;
+        for (let d = 0; d < 7; d++) {
+            let p = 0;
+            for (let b = a; b < a + 6; b += 2) {
+                if (posit[piece[b]] === posit[piece[42]]) p += 4;
+                if (posit[piece[b]] === posit[piece[44]]) p += 1;
+                if (posit[piece[b]] === posit[piece[46]]) p += 2;
+            }
+            ps[d] = p;
+            if (posit[piece[a]] === posit[piece[42]] || posit[piece[a]] === opp[posit[piece[42]]]) tws[d] = 0;
+            else if (posit[piece[a + 2]] === posit[piece[42]] || posit[piece[a + 2]] === opp[posit[piece[42]]]) tws[d] = 1;
+            else tws[d] = 2;
+            a += 6;
+        }
+
+        let q = 0;
+        for (let a = 0; a < 7; a++) {
+            let b = 0;
+            for (let c = 0; c < 7; c++) {
+                if (ps[c] === a) break;
+                if (ps[c] > a) b++;
+            }
+            q = q * (7 - a) + b;
+        }
+
+        let t = 0;
+        for (let a = 5; a >= 0; a--) {
+            t = t * 3 + tws[a] - 3 * Math.floor(tws[a] / 3);
+        }
+
+        if (q === 0 && t === 0) return []; // Already solved
+
+        sol = [];
+        let found = false;
+        // Max depth is 11 for a 2x2x2 cube
+        for (let l = 0; l <= 11; l++) {
+            if (search(0, q, t, l, -1)) {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) return "Error: Unsolvable cube state.";
+
+        let moveList = [];
+        for (let i = 0; i < sol.length; i++) {
+            let move = "URF".charAt(Math.floor(sol[i] / 10));
+            let suffix = " 2'".charAt(sol[i] % 10).trim(); // Remove space for single moves
+            moveList.push(move + suffix);
+        }
+
+        return moveList;
+    }
+
+    return {
+        solve: solve,
+        init: init
+    };
+})();
 
 let solutionSteps = [];
 let currentStepIndex = 0;
@@ -434,12 +681,11 @@ document.getElementById('btnStartSolve-2x2').addEventListener('click', () => {
       });
     });
 
+    const colorErrors = [];
     if (hasUnpainted) {
-      showErrorPopup(['You have unpainted tiles on the cube.']);
-      return;
+      colorErrors.push('You have unpainted tiles on the cube.');
     }
 
-    const colorErrors = [];
     EXPECTED_COLORS.forEach(hex => {
       const name = HEX_TO_NAME[hex];
       const count = colorCounts[hex] || 0;
@@ -455,14 +701,15 @@ document.getElementById('btnStartSolve-2x2').addEventListener('click', () => {
       return;
     }
 
-    document.getElementById('solver-status-2x2').innerText = "Calculating...";
-    const stateStr = getCubeString2x2();
+    document.getElementById('solver-status-2x2').innerText = "Calculating Solution...";
+    const posit = getCubeArray2x2();
 
-    const cube = Cube.fromString(stateStr);
-    const solution = cube.solve();
+    const movesArr = Rubiks2x2Solver.solve(posit);
+    if (typeof movesArr === 'string') {
+        throw new Error(movesArr); // "Error: Unsolvable cube state."
+    }
 
     solutionSteps = [];
-    const movesArr = solution.split(' ').filter(m => m);
     for (let m of movesArr) {
       let face = m[0];
       let modifier = m.length > 1 ? m[1] : '';
