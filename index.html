@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Unscramble3D</title>
   <link rel="stylesheet" href="./src/style.css" />
-  <link rel="stylesheet" href="./src/cube-arts.css" />
   <script type="importmap">
       {
         "imports": {
@@ -145,8 +144,8 @@
     </div>
   </div>
 
-  <div id="coming-soon-view" class="d-none" style="display: flex; justify-content: center; align-items: center; height: 80vh;">
-    <h1 style="color: #475569; font-size: 2.5rem; text-align: center;"><span id="coming-soon-title"></span><br><span style="font-size: 1.5rem; font-weight: normal;">Coming Soon</span></h1>
+  <div id="coming-soon-view" class="d-none">
+    <h1><span id="coming-soon-title"></span><br><span>Coming Soon</span></h1>
   </div>
 
   <div id="cube-arts-view" class="d-none">
@@ -176,19 +175,19 @@
     </div>
     <button id="btnArtSideBack" class="side-nav left-nav" disabled>&lt; Back</button>
     <button id="btnArtSideNext" class="side-nav right-nav">Next &gt;</button>
-    <button id="btnViewPattern" class="action-btn primary d-none" style="position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); z-index: 10; pointer-events: auto;">View</button>
+    <button id="btnViewPattern" class="action-btn primary d-none">View</button>
   </div>
 
   <div id="patternViewOverlay" class="error-popup-overlay d-none">
-    <div class="error-popup" style="max-width: 800px; width: 90%; height: 80vh; display: flex; flex-direction: column; padding: 1.5rem;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-        <h3 id="modalPatternName" style="color: #1e3a5f; margin: 0;">Pattern View</h3>
-        <button id="closePatternModal" class="icon-btn" style="width: 35px; height: 35px; font-size: 1.2rem;">&times;</button>
+    <div class="error-popup pattern-modal">
+      <div class="modal-header">
+        <h3 id="modalPatternName">Pattern View</h3>
+        <button id="closePatternModal" class="icon-btn">&times;</button>
       </div>
-      <div id="modal-cube-container" style="flex: 1; width: 100%; background: rgba(0,0,0,0.1); border-radius: 12px; position: relative; overflow: hidden; cursor: grab;">
+      <div id="modal-cube-container">
         <!-- 3D Scene will be injected here -->
       </div>
-      <p style="margin-top: 1rem; font-size: 0.9rem; color: #4a5568; font-style: italic;">You can rotate and zoom to view the pattern from all sides.</p>
+      <p class="modal-footer">You can rotate and zoom to view the pattern from all sides.</p>
     </div>
   </div>
 
@@ -242,7 +241,8 @@
   <div id="app"></div>
   <div id="app-3x3" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:1; display:none;"></div>
   <div id="app-2x2" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:1; display:none;"></div>
-  <div id="app-cube-arts" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:1; display:none;"></div>
+  <div id="app-cube-arts" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:1; display:none;">
+  </div>
   <script type="module" src="./src/main.js"></script>
   <script type="module" src="./src/solver-3x3.js"></script>
   <script type="module" src="./src/solver-2x2.js"></script>
