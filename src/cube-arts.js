@@ -9,12 +9,28 @@ let patterns = [];
 const gridContainer = document.getElementById('cubeArtsGrid');
 const filterTypeBtn = document.getElementById('filterType');
 const filterDiffBtn = document.getElementById('filterDifficulty');
+const btnViewPattern = document.getElementById('btnViewPattern');
+const patternViewOverlay = document.getElementById('patternViewOverlay');
+const modalCubeContainer = document.getElementById('modal-cube-container');
+const closePatternModalBtn = document.getElementById('closePatternModal');
+const modalPatternName = document.getElementById('modalPatternName');
 
 // --- UI rendering and filtering ---
 async function loadCubeArts() {
   try {
     const res = await fetch('./public/data/cube-arts.json');
-    patterns = await res.json();
+    const data = await res.json();
+    
+    // Flatten the object keys (3x3x3, 2x2x2, 4x4x4) into the patterns array
+    patterns = [];
+    for (const type in data) {
+      data[type].forEach(pattern => {
+        // Add the type to the pattern object for the filter logic to work
+        pattern.type = type;
+        patterns.push(pattern);
+      });
+    }
+
     renderCards();
   } catch (err) {
     console.warn("Could not load cube arts json", err);
@@ -92,6 +108,39 @@ scene.add(dirLight2);
 const dirLight3 = new THREE.DirectionalLight(0xffffff, 1.0);
 dirLight3.position.set(10, -10, -10);
 scene.add(dirLight3);
+
+// --- Modal 3D Scene setup ---
+let modalScene, modalCamera, modalRenderer, modalControls, modalCubeGroup;
+let modalCubies = [];
+let isModalActive = false;
+
+function initModalScene() {
+  modalScene = new THREE.Scene();
+  modalCamera = new THREE.PerspectiveCamera(45, modalCubeContainer.clientWidth / modalCubeContainer.clientHeight, 0.1, 100);
+  modalCamera.position.set(5, 5, 8);
+
+  modalRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  modalRenderer.setSize(modalCubeContainer.clientWidth, modalCubeContainer.clientHeight);
+  modalRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  modalCubeContainer.appendChild(modalRenderer.domElement);
+
+  modalControls = new OrbitControls(modalCamera, modalRenderer.domElement);
+  modalControls.enableDamping = true;
+  modalControls.dampingFactor = 0.05;
+  modalControls.enablePan = false;
+
+  const ambient = new THREE.AmbientLight(0xffffff, 2.5);
+  modalScene.add(ambient);
+  const d1 = new THREE.DirectionalLight(0xffffff, 1.5);
+  d1.position.set(10, 20, 10);
+  modalScene.add(d1);
+  const d2 = new THREE.DirectionalLight(0xffffff, 1.0);
+  d2.position.set(-10, 10, -10);
+  modalScene.add(d2);
+
+  modalCubeGroup = new THREE.Group();
+  modalScene.add(modalCubeGroup);
+}
 
 const cubies = [];
 const cubeGroup = new THREE.Group();
@@ -304,6 +353,13 @@ function updatePlaybackUI() {
   const btnSideBack = document.getElementById('btnArtSideBack');
   const btnSideNext = document.getElementById('btnArtSideNext');
 
+  // View button should ONLY be visible when the pattern is fully completed
+  if (currentStepIndex >= solutionSteps.length && lastActionDirection === 1) {
+    btnViewPattern.classList.remove('d-none');
+  } else {
+    btnViewPattern.classList.add('d-none');
+  }
+
   if (currentStepIndex === 0 && lastActionDirection === 1) {
     humanInstruction.innerText = "READY TO LEARN: " + currentPattern.name.toUpperCase();
     solutionText.innerHTML = `Hold your SOLVED Cube as shown below, hit "next" to start creating the pattern.`;
@@ -345,6 +401,38 @@ function updatePlaybackUI() {
   }
 }
 
+function openPatternModal() {
+  if (!modalRenderer) initModalScene();
+  
+  isModalActive = true;
+  patternViewOverlay.classList.remove('d-none');
+  modalPatternName.innerText = currentPattern.name;
+
+  // Sync modal cube with current cube
+  modalCubies.forEach(c => modalCubeGroup.remove(c));
+  modalCubies = [];
+
+  cubies.forEach(cubie => {
+    const clone = cubie.clone();
+    // We need to clone materials to avoid sharing state if we wanted to animate, 
+    // but for static view it's mostly fine. However, let's ensure stickers are correct.
+    modalCubeGroup.add(clone);
+    modalCubies.push(clone);
+  });
+
+  // Handle resize for modal
+  const width = modalCubeContainer.clientWidth;
+  const height = modalCubeContainer.clientHeight;
+  modalCamera.aspect = width / height;
+  modalCamera.updateProjectionMatrix();
+  modalRenderer.setSize(width, height);
+}
+
+function closePatternModal() {
+  isModalActive = false;
+  patternViewOverlay.classList.add('d-none');
+}
+
 async function handleNext() {
   if (isAnimating || currentStepIndex >= solutionSteps.length) return;
   let move = solutionSteps[currentStepIndex];
@@ -365,17 +453,25 @@ async function handleBack() {
 
 document.getElementById('btnArtSideNext').addEventListener('click', handleNext);
 document.getElementById('btnArtSideBack').addEventListener('click', handleBack);
-document.getElementById('btnArtExit').addEventListener('click', () => {
-    window.history.pushState({}, '', '/cube-arts');
-    window.dispatchEvent(new Event('popstate'));
+btnViewPattern.addEventListener('click', openPatternModal);
+closePatternModalBtn.addEventListener('click', closePatternModal);
+patternViewOverlay.addEventListener('click', (e) => {
+    if (e.target === patternViewOverlay) closePatternModal();
 });
 
 function animate(time) {
   requestAnimationFrame(animate);
   if (isActive && container.style.display !== 'none') {
     TWEEN.update(time);
-    controls.update();
-    renderer.render(scene, camera);
+    if (!isModalActive) {
+      controls.update();
+      renderer.render(scene, camera);
+    }
+  }
+  
+  if (isModalActive && modalRenderer) {
+    modalControls.update();
+    modalRenderer.render(modalScene, modalCamera);
   }
 }
 animate();

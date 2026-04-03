@@ -125,3 +125,17 @@
 #cube-arts-player-view button {
   pointer-events: auto;
 }
+
+#btnViewPattern {
+  bottom: 3rem;
+  padding: 0.8rem 2.5rem;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+#modal-cube-container canvas {
+  width: 100% !important;
+  height: 100% !important;
+  outline: none;
+}
