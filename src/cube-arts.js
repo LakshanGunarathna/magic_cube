@@ -64,9 +64,9 @@ function renderCards() {
       </div>
     `;
     el.addEventListener('click', () => {
-      // Currently we only support 3x3x3 3D player. So alert if other types.
-      if (p.type !== '3x3x3') {
-         alert("3D guide is only available for 3x3x3 puzzles at the moment!");
+      // Currently we only support 3x3x3 and 2x2x2 3D players. So alert if other types.
+      if (p.type !== '3x3x3' && p.type !== '2x2x2') {
+         alert("3D guide is only available for 3x3x3 and 2x2x2 puzzles at the moment!");
          return;
       }
       playPattern(p);
@@ -175,14 +175,23 @@ const getStickerMat = (color) => new THREE.MeshStandardMaterial({
   color, roughness: 0.9, metalness: 0.1, bumpMap: noiseTexture, bumpScale: 0.003
 });
 
-function initCube() {
+function initCube(type = '3x3x3') {
   // Clear old cubies
   cubies.forEach(c => cubeGroup.remove(c));
   cubies.length = 0;
 
-  for (let x = -1; x <= 1; x++) {
-    for (let y = -1; y <= 1; y++) {
-      for (let z = -1; z <= 1; z++) {
+  let offsets = [];
+  if (type === '2x2x2') {
+    offsets = [-0.5, 0.5];
+    cubeGroup.scale.set(1.5, 1.5, 1.5);
+  } else {
+    offsets = [-1, 0, 1];
+    cubeGroup.scale.set(1, 1, 1);
+  }
+
+  for (let x of offsets) {
+    for (let y of offsets) {
+      for (let z of offsets) {
         const cubieGroup = new THREE.Group();
         cubieGroup.position.set(x, y, z);
         const core = new THREE.Mesh(coreGeometry, coreMaterial);
@@ -196,12 +205,12 @@ function initCube() {
           cubieGroup.add(stick);
         };
 
-        if (x === 1) addSticker(stickerGeometryX, colors.right, [0.49, 0, 0]);
-        if (x === -1) addSticker(stickerGeometryX, colors.left, [-0.49, 0, 0]);
-        if (y === 1) addSticker(stickerGeometryY, colors.top, [0, 0.49, 0]);
-        if (y === -1) addSticker(stickerGeometryY, colors.bottom, [0, -0.49, 0]);
-        if (z === 1) addSticker(stickerGeometryZ, colors.front, [0, 0, 0.49]);
-        if (z === -1) addSticker(stickerGeometryZ, colors.back, [0, 0, -0.49]);
+        if (x > 0) addSticker(stickerGeometryX, colors.right, [0.49, 0, 0]);
+        if (x < 0) addSticker(stickerGeometryX, colors.left, [-0.49, 0, 0]);
+        if (y > 0) addSticker(stickerGeometryY, colors.top, [0, 0.49, 0]);
+        if (y < 0) addSticker(stickerGeometryY, colors.bottom, [0, -0.49, 0]);
+        if (z > 0) addSticker(stickerGeometryZ, colors.front, [0, 0, 0.49]);
+        if (z < 0) addSticker(stickerGeometryZ, colors.back, [0, 0, -0.49]);
 
         cubeGroup.add(cubieGroup);
         cubies.push(cubieGroup);
@@ -219,7 +228,11 @@ function rotateLayer(axis, layer, angle, duration = 300) {
     if (isAnimating && duration > 0) return;
     isAnimating = true;
 
-    const activeCubies = cubies.filter(c => Math.abs(Math.round(c.position[axis]) - layer) < 0.1);
+    const is2x2 = currentPattern && currentPattern.type === '2x2x2';
+    const activeCubies = cubies.filter(c => {
+      const pos = is2x2 ? Math.round(c.position[axis] * 2) / 2 : Math.round(c.position[axis]);
+      return Math.abs(pos - layer) < 0.1;
+    });
 
     const pivot = new THREE.Group();
     cubeGroup.add(pivot);
@@ -242,12 +255,19 @@ function rotateLayer(axis, layer, angle, duration = 300) {
 }
 
 function finishRotation(pivot, activeCubies, resolve) {
+  const is2x2 = currentPattern && currentPattern.type === '2x2x2';
   pivot.updateMatrixWorld();
   activeCubies.forEach(c => {
     cubeGroup.attach(c);
-    c.position.x = Math.round(c.position.x);
-    c.position.y = Math.round(c.position.y);
-    c.position.z = Math.round(c.position.z);
+    if (is2x2) {
+      c.position.x = Math.round(c.position.x * 2) / 2;
+      c.position.y = Math.round(c.position.y * 2) / 2;
+      c.position.z = Math.round(c.position.z * 2) / 2;
+    } else {
+      c.position.x = Math.round(c.position.x);
+      c.position.y = Math.round(c.position.y);
+      c.position.z = Math.round(c.position.z);
+    }
 
     const euler = new THREE.Euler().setFromQuaternion(c.quaternion);
     euler.x = Math.round(euler.x / (Math.PI / 2)) * (Math.PI / 2);
@@ -260,10 +280,16 @@ function finishRotation(pivot, activeCubies, resolve) {
   if (resolve) resolve();
 }
 
-const MOVES = {
+const MOVES_3X3 = {
   'L': ['x', -1, Math.PI / 2], 'M': ['x', 0, Math.PI / 2], 'R': ['x', 1, -Math.PI / 2],
   'U': ['y', 1, -Math.PI / 2], 'E': ['y', 0, Math.PI / 2], 'D': ['y', -1, Math.PI / 2],
   'F': ['z', 1, -Math.PI / 2], 'S': ['z', 0, -Math.PI / 2], 'B': ['z', -1, Math.PI / 2]
+};
+
+const MOVES_2X2 = {
+  'L': ['x', -0.5, Math.PI / 2], 'R': ['x', 0.5, -Math.PI / 2],
+  'U': ['y', 0.5, -Math.PI / 2], 'D': ['y', -0.5, Math.PI / 2],
+  'F': ['z', 0.5, -Math.PI / 2], 'B': ['z', -0.5, Math.PI / 2]
 };
 
 let isActive = false;
@@ -290,7 +316,9 @@ window.addEventListener('route-changed', (e) => {
 
 function playPattern(p) {
   currentPattern = p;
-  initCube();
+  initCube(p.type);
+  
+  const MOVES = p.type === '2x2x2' ? MOVES_2X2 : MOVES_3X3;
   
   // Parse moves exactly as they are written to form the pattern
   const rawMovesArray = p.moves.trim().split(' ').filter(m => m);

@@ -337,6 +337,35 @@
       "imageUrl": "/public/assets/cube-arts-pong.png"
     }
   ],
-  "2x2x2": [],
+  "2x2x2": [
+    {
+      "id": "2x2_1",
+      "name": "2x2#1 (Checkerboard)",
+      "difficulty": "Easy",
+      "moves": "U R F2 U R F2 R U F' R",
+      "imageUrl": "/public/assets/cube-arts-checkerboard.png"
+    },
+    {
+      "id": "2x2_2",
+      "name": "2x2#2 (Zig Zag)",
+      "difficulty": "Easy",
+      "moves": "U2 R2 F2",
+      "imageUrl": "/public/assets/cube-arts-checkerboard.png"
+    },
+    {
+      "id": "2x2_3",
+      "name": "2x2#3 (Cube in a Cube)",
+      "difficulty": "Medium",
+      "moves": "R F U' R2 U F' R U F2 R2",
+      "imageUrl": "/public/assets/cube-arts-cube-in-a-cube.png"
+    },
+    {
+      "id": "2x2_4",
+      "name": "2x2#4 (4 Side Chekerboard)",
+      "difficulty": "Hard",
+      "moves": "R2 F2 R2 U2",
+      "imageUrl": "/public/assets/cube-arts-4-side-chekerboard.png"
+    }
+  ],
   "4x4x4": []
 }
