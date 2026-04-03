@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Unscramble3D</title>
   <link rel="stylesheet" href="./src/style.css" />
+  <link rel="stylesheet" href="./src/cube-arts.css" />
   <script type="importmap">
       {
         "imports": {
@@ -148,6 +149,36 @@
     <h1 style="color: #475569; font-size: 2.5rem; text-align: center;"><span id="coming-soon-title"></span><br><span style="font-size: 1.5rem; font-weight: normal;">Coming Soon</span></h1>
   </div>
 
+  <div id="cube-arts-view" class="d-none">
+    <div class="cube-arts-header">
+      <h2>Cube Arts</h2>
+      <div class="filters">
+        <select id="filterType">
+          <option value="All">All Types</option>
+          <option value="3x3x3">3x3x3</option>
+          <option value="4x4x4">4x4x4</option>
+        </select>
+        <select id="filterDifficulty">
+          <option value="All">All Difficulties</option>
+          <option value="Easy">Easy</option>
+          <option value="Medium">Medium</option>
+          <option value="Hard">Hard</option>
+        </select>
+      </div>
+    </div>
+    <div class="cube-arts-grid" id="cubeArtsGrid"></div>
+  </div>
+
+  <div id="cube-arts-player-view" class="d-none">
+    <div class="playback-instruction" style="z-index: 10;">
+      <h2 id="artInstruction">READY TO LEARN!</h2>
+      <p id="artSolutionText">Hold your solved Cube as shown below, Press "Next" to start.</p>
+    </div>
+    <button id="btnArtExit" class="action-btn" style="position: absolute; top: 1rem; right: 1rem; z-index: 10; pointer-events: auto;">&times; Exit</button>
+    <button id="btnArtSideBack" class="side-nav left-nav" disabled>&lt; Back</button>
+    <button id="btnArtSideNext" class="side-nav right-nav">Next &gt;</button>
+  </div>
+
   <div id="cubeSolvedMsg-3x3" class="d-none cube-solved-msg">🎉 CUBE SOLVED!</div>
   <div id="cubeSolvedMsg-2x2" class="d-none cube-solved-msg">🎉 CUBE SOLVED!</div>
 
@@ -198,9 +229,11 @@
   <div id="app"></div>
   <div id="app-3x3" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:1; display:none;"></div>
   <div id="app-2x2" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:1; display:none;"></div>
+  <div id="app-cube-arts" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:1; display:none;"></div>
   <script type="module" src="./src/main.js"></script>
   <script type="module" src="./src/solver-3x3.js"></script>
   <script type="module" src="./src/solver-2x2.js"></script>
+  <script type="module" src="./src/cube-arts.js"></script>
 </body>
 
 </html>

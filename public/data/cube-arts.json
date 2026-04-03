@@ -1,0 +1,66 @@
+[
+  {
+    "id": "anaconda",
+    "name": "Anaconda",
+    "type": "3x3x3",
+    "difficulty": "Medium",
+    "moves": "L U B' U' R L' B R' F B' D R D' F'",
+    "imageUrl": "/public/assets/cube-arts-anaconda.png"
+  },
+  {
+    "id": "python",
+    "name": "Python",
+    "type": "3x3x3",
+    "difficulty": "Hard",
+    "moves": "F2 R' B' U R' L F' L F' B D' R B L2",
+    "imageUrl": "/public/assets/cube-arts-python.png"
+  },
+  {
+    "id": "diamond",
+    "name": "Diamond",
+    "type": "3x3x3",
+    "difficulty": "Hard",
+    "moves": "F L F U' R U F2 L2 U' L' B D' B' L2 U",
+    "imageUrl": "/public/assets/cube-arts-diamond.png"
+  },
+  {
+    "id": "double-diamond",
+    "name": "Double Diamond",
+    "type": "3x3x3",
+    "difficulty": "Medium",
+    "moves": "F2 L2 R2 B2 U2 D2",
+    "imageUrl": "/public/assets/cube-arts-double-diamond.png"
+  },
+  {
+    "id": "plus-minus",
+    "name": "Plus Minus",
+    "type": "3x3x3",
+    "difficulty": "Easy",
+    "moves": "U2 D2 F2 B2 L2 R2",
+    "imageUrl": "/public/assets/cube-arts-plus-minus.png"
+  },
+  {
+    "id": "x-pattern",
+    "name": "X Pattern",
+    "type": "3x3x3",
+    "difficulty": "Easy",
+    "moves": "F2 R2 L2 B2 U2 D2",
+    "imageUrl": "/public/assets/cube-arts-x-pattern.png"
+  },
+  {
+    "id": "union-jack",
+    "name": "Union Jack",
+    "type": "3x3x3",
+    "difficulty": "Hard",
+    "moves": "U F B' L2 U2 L2 F' B U2 L2 U",
+    "imageUrl": "/public/assets/cube-arts-union-jack.webp"
+  },
+  {
+    "id": "kite-pattern",
+    "name": "Kite Pattern",
+    "type": "3x3x3",
+    "difficulty": "Medium",
+    "moves": "F R' B L' U' F' R U2 F R' B'",
+    "imageUrl": "/public/assets/cube-arts-kite.webp"
+  }
+]
