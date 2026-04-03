@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unscramble3D</title>
+
+  <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
+          "@tweenjs/tween.js": "https://unpkg.com/@tweenjs/tween.js@23.1.1/dist/tween.esm.js",
+          "cubejs": "https://jspm.dev/cubejs"
+        }
+      }
+    </script>
+  <script type="module" crossorigin src="/magic_cube/assets/index-CBhh3Ztz.js"></script>
+  <link rel="stylesheet" crossorigin href="/magic_cube/assets/index-DFlRj_9y.css">
+</head>
+
+<body>
+  <nav class="navbar">
+    <button class="nav-btn active" data-route="/">Home</button>
+    <div class="dropdown">
+      <button class="nav-btn">Cubes ▼</button>
+      <div class="dropdown-content">
+        <a href="#" data-route="/cubes/3x3x3 cube">3x3x3 Cube</a>
+        <a href="#" data-route="/cubes/2x2x2 cube">2x2x2 Cube</a>
+      </div>
+    </div>
+    <div class="dropdown">
+      <button class="nav-btn">Solver ▼</button>
+      <div class="dropdown-content">
+        <a href="#" data-route="/solver/3x3x3 cube">3x3x3 Cube</a>
+        <a href="#" data-route="/solver/2x2x2 cube">2x2x2 Cube</a>
+        <a href="#" data-route="/solver/4x4x4 cube">4x4x4 Cube</a>
+      </div>
+    </div>
+    <button class="nav-btn" data-route="/cube-arts">Cube Arts</button>
+  </nav>
+
+  <div id="home-view">
+    <div id="uicontainer">
+      <h1>Unscramble3D</h1>
+      <div class="controls">
+        <button id="shuffleBtn">Shuffle</button>
+        <button id="resetBtn">Reset</button>
+      </div>
+    </div>
+    <div class="slice-controls">
+      <button id="btnL">L</button>
+      <button id="btnM">M</button>
+      <button id="btnR">R</button>
+      <button id="btnU">U</button>
+      <button id="btnE">E</button>
+      <button id="btnD">D</button>
+      <button id="btnF">F</button>
+      <button id="btnS">S</button>
+      <button id="btnB">B</button>
+    </div>
+  </div>
+
+  <div id="solve-3x3-view" class="d-none">
+    <div id="paint-phase-3x3">
+      <div class="palette-container" style="top: 1rem;">
+        <h2>Select Color to Paint</h2>
+        <div class="color-palette-3x3" style="display: flex; gap: 1rem; pointer-events: auto;">
+          <div class="swatch-3x3 swatch selected" data-color="0xFFFFFF" style="background: #FFFFFF;"></div>
+          <div class="swatch-3x3 swatch" data-color="0xFFD500" style="background: #FFD500;"></div>
+          <div class="swatch-3x3 swatch" data-color="0x0051BA" style="background: #0051BA;"></div>
+          <div class="swatch-3x3 swatch" data-color="0x009E60" style="background: #009E60;"></div>
+          <div class="swatch-3x3 swatch" data-color="0xC41E3A" style="background: #C41E3A;"></div>
+          <div class="swatch-3x3 swatch" data-color="0xFF5800" style="background: #FF5800;"></div>
+        </div>
+      </div>
+
+      <div class="paint-footer">
+        <button id="btnPaintReset-3x3" class="action-btn">Reset</button>
+
+        <div class="cube-rotators">
+          <button id="rotLeft-3x3" class="icon-btn">&#8592;</button>
+          <button id="rotUp-3x3" class="icon-btn">&#8593;</button>
+          <button id="rotDown-3x3" class="icon-btn">&#8595;</button>
+          <button id="rotRight-3x3" class="icon-btn">&#8594;</button>
+        </div>
+
+        <div style="display: flex; gap: 1rem; align-items: center;">
+          <p id="solver-status-3x3" class="solver-status"></p>
+          <button id="btnStartSolve-3x3" class="action-btn primary">Solve!</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="playback-phase-3x3" class="d-none">
+      <div class="playback-instruction">
+        <h2 id="humanInstruction-3x3">READY TO SOLVE!</h2>
+        <p id="solutionText-3x3">Hold your Cube as shown below, Press "Next" to start.</p>
+      </div>
+
+      <button id="btnSideBack-3x3" class="side-nav left-nav" disabled>&lt; Back</button>
+      <button id="btnSideNext-3x3" class="side-nav right-nav">Next &gt;</button>
+    </div>
+  </div>
+
+  <div id="solve-2x2-view" class="d-none">
+    <div id="paint-phase-2x2">
+      <div class="palette-container" style="top: 1rem;">
+        <h2>Select Color to Paint</h2>
+        <div class="color-palette-2x2" style="display: flex; gap: 1rem; pointer-events: auto;">
+          <div class="swatch-2x2 swatch selected" data-color="0xFFFFFF" style="background: #FFFFFF;"></div>
+          <div class="swatch-2x2 swatch" data-color="0xFFD500" style="background: #FFD500;"></div>
+          <div class="swatch-2x2 swatch" data-color="0x0051BA" style="background: #0051BA;"></div>
+          <div class="swatch-2x2 swatch" data-color="0x009E60" style="background: #009E60;"></div>
+          <div class="swatch-2x2 swatch" data-color="0xC41E3A" style="background: #C41E3A;"></div>
+          <div class="swatch-2x2 swatch" data-color="0xFF5800" style="background: #FF5800;"></div>
+        </div>
+      </div>
+
+      <div class="paint-footer">
+        <button id="btnPaintReset-2x2" class="action-btn">Reset</button>
+
+        <div class="cube-rotators">
+          <button id="rotLeft-2x2" class="icon-btn">&#8592;</button>
+          <button id="rotUp-2x2" class="icon-btn">&#8593;</button>
+          <button id="rotDown-2x2" class="icon-btn">&#8595;</button>
+          <button id="rotRight-2x2" class="icon-btn">&#8594;</button>
+        </div>
+
+        <div style="display: flex; gap: 1rem; align-items: center;">
+          <p id="solver-status-2x2" class="solver-status"></p>
+          <button id="btnStartSolve-2x2" class="action-btn primary">Solve!</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="playback-phase-2x2" class="d-none">
+      <div class="playback-instruction">
+        <h2 id="humanInstruction-2x2">READY TO SOLVE!</h2>
+        <p id="solutionText-2x2">Hold your Cube as shown below, Press "Next" to start.</p>
+      </div>
+
+      <button id="btnSideBack-2x2" class="side-nav left-nav" disabled>&lt; Back</button>
+      <button id="btnSideNext-2x2" class="side-nav right-nav">Next &gt;</button>
+    </div>
+  </div>
+
+  <div id="coming-soon-view" class="d-none">
+    <h1><span id="coming-soon-title"></span><br><span>Coming Soon</span></h1>
+  </div>
+
+  <div id="cube-arts-view" class="d-none">
+    <div class="cube-arts-header">
+      <h2>Cube Arts</h2>
+      <div class="filters">
+        <select id="filterType">
+          <option value="All">All Types</option>
+          <option value="3x3x3">3x3x3</option>
+          <option value="4x4x4">4x4x4</option>
+        </select>
+        <select id="filterDifficulty">
+          <option value="All">All Difficulties</option>
+          <option value="Easy">Easy</option>
+          <option value="Medium">Medium</option>
+          <option value="Hard">Hard</option>
+        </select>
+      </div>
+    </div>
+    <div class="cube-arts-grid" id="cubeArtsGrid"></div>
+  </div>
+
+  <div id="cube-arts-player-view" class="d-none">
+    <div class="playback-instruction" style="z-index: 10;">
+      <h2 id="artInstruction">READY TO LEARN!</h2>
+      <p id="artSolutionText">Hold your solved Cube as shown below, Press "Next" to start.</p>
+    </div>
+    <button id="btnArtSideBack" class="side-nav left-nav" disabled>&lt; Back</button>
+    <button id="btnArtSideNext" class="side-nav right-nav">Next &gt;</button>
+    <button id="btnViewPattern" class="action-btn primary d-none">View</button>
+  </div>
+
+  <div id="patternViewOverlay" class="error-popup-overlay d-none">
+    <div class="error-popup pattern-modal">
+      <div class="modal-header">
+        <h3 id="modalPatternName">Pattern View</h3>
+        <button id="closePatternModal" class="icon-btn">&times;</button>
+      </div>
+      <div id="modal-cube-container">
+        <!-- 3D Scene will be injected here -->
+      </div>
+      <p class="modal-footer">You can rotate and zoom to view the pattern from all sides.</p>
+    </div>
+  </div>
+
+  <div id="cubeSolvedMsg-3x3" class="d-none cube-solved-msg">🎉 CUBE SOLVED!</div>
+  <div id="cubeSolvedMsg-2x2" class="d-none cube-solved-msg">🎉 CUBE SOLVED!</div>
+
+  <div id="errorPopupOverlay-3x3" class="error-popup-overlay d-none">
+    <div class="error-popup">
+      <h3>⚠️ Your Cube is not colored correctly</h3>
+      <p class="error-subtitle">You should consider the following:</p>
+      <ul id="errorList-3x3"></ul>
+      <p class="error-footer">After fixing the coloring issues press "Solve!" again.</p>
+      <button id="errorPopupClose-3x3" class="error-popup-btn">OK</button>
+    </div>
+  </div>
+
+  <div id="errorPopupOverlay-2x2" class="error-popup-overlay d-none">
+    <div class="error-popup">
+      <h3>⚠️ Your Cube is not colored correctly</h3>
+      <p class="error-subtitle">You should consider the following:</p>
+      <ul id="errorList-2x2"></ul>
+      <p class="error-footer">After fixing the coloring issues press "Solve!" again.</p>
+      <button id="errorPopupClose-2x2" class="error-popup-btn">OK</button>
+    </div>
+  </div>
+
+  <div id="confirmResetOverlay-3x3" class="error-popup-overlay d-none">
+    <div class="error-popup">
+      <h3>🔄 Reset Coloring?</h3>
+      <p class="error-subtitle">If you continue your current coloring will be lost.</p>
+      <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1rem;">
+        <button id="confirmResetCancel-3x3" class="error-popup-btn">Cancel</button>
+        <button id="confirmResetOk-3x3" class="error-popup-btn"
+          style="background: rgba(220, 38, 38, 0.2) !important; border-color: rgba(220, 38, 38, 0.3) !important; color: #b91c1c !important;">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="confirmResetOverlay-2x2" class="error-popup-overlay d-none">
+    <div class="error-popup">
+      <h3>🔄 Reset Coloring?</h3>
+      <p class="error-subtitle">If you continue your current coloring will be lost.</p>
+      <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1rem;">
+        <button id="confirmResetCancel-2x2" class="error-popup-btn">Cancel</button>
+        <button id="confirmResetOk-2x2" class="error-popup-btn"
+          style="background: rgba(220, 38, 38, 0.2) !important; border-color: rgba(220, 38, 38, 0.3) !important; color: #b91c1c !important;">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="app"></div>
+  <div id="app-3x3" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:1; display:none;"></div>
+  <div id="app-2x2" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:1; display:none;"></div>
+  <div id="app-cube-arts" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:1; display:none;">
+  </div>
+</body>
+
+</html>
