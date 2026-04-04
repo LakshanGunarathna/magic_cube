@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { RUBIKS_CUBE_COLORS as colors } from './globals.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import * as TWEEN from '@tweenjs/tween.js';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
@@ -40,11 +41,7 @@ const cubies = [];
 const cubeGroup = new THREE.Group();
 scene.add(cubeGroup);
 
-const colors = {
-  right: 0x2A62C9, left: 0x3DBD62,
-  top: 0xFFFFFF, bottom: 0xDFBD28,
-  front: 0xC41E3A, back: 0xFF5800
-};
+
 
 const coreGeometry = new RoundedBoxGeometry(0.99, 0.99, 0.99, 5, 0.10);
 const coreMaterial = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.7, metalness: 0.1 });

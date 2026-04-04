@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { RUBIKS_CUBE_COLORS as colors, white, yellow, blue, green, red, orange } from './globals.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import * as TWEEN from '@tweenjs/tween.js';
@@ -40,11 +41,7 @@ const cubies = [];
 const cubeGroup = new THREE.Group();
 scene.add(cubeGroup);
 
-const colors = {
-  right: 0x2A62C9, left: 0x3DBD62,
-  top: 0xFFFFFF, bottom: 0xDFBD28,
-  front: 0xC41E3A, back: 0xFF5800
-};
+
 
 const coreGeometry = new RoundedBoxGeometry(0.99, 0.99, 0.99, 5, 0.10);
 const coreMaterial = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.7, metalness: 0.1 });
@@ -181,27 +178,40 @@ window.addEventListener('route-changed', (e) => {
   }
 });
 
-let selectedColorHex = 0xFFFFFF;
-const swatches = document.querySelectorAll('.swatch-2x2');
-swatches.forEach(swatch => {
-  swatch.addEventListener('click', () => {
-    swatches.forEach(s => s.classList.remove('selected'));
-    swatch.classList.add('selected');
-    selectedColorHex = parseInt(swatch.dataset.color, 16);
+let selectedColorHex = white;
+const EXPECTED_COLORS_ARR = [white, yellow, blue, green, red, orange];
+const swatches = [];
+const paletteContainer = document.querySelector('.color-palette-2x2');
+if (paletteContainer) {
+  EXPECTED_COLORS_ARR.forEach((colorCode) => {
+    const swatch = document.createElement('div');
+    swatch.className = 'swatch-2x2 swatch';
+    if (colorCode === white) swatch.classList.add('selected');
+    swatch.dataset.color = colorCode;
+    swatch.style.background = '#' + colorCode.toString(16).padStart(6, '0');
+    
+    swatch.addEventListener('click', () => {
+      swatches.forEach(s => s.classList.remove('selected'));
+      swatch.classList.add('selected');
+      selectedColorHex = colorCode;
+    });
+    
+    swatches.push(swatch);
+    paletteContainer.appendChild(swatch);
   });
-});
+}
 
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 let pointerDownPos = { x: 0, y: 0 };
 
-const OPPOSITE_COLORS = {
-  0xFFFFFF: 0xFFD500, 0xFFD500: 0xFFFFFF,
-  0x0051BA: 0x009E60, 0x009E60: 0x0051BA,
-  0xC41E3A: 0xFF5800, 0xFF5800: 0xC41E3A,
-  0x2A62C9: 0x3DBD62, 0x3DBD62: 0x2A62C9,
-  0xDFBD28: 0xFFFFFF
-};
+const OPPOSITE_COLORS = {};
+OPPOSITE_COLORS[white] = yellow;
+OPPOSITE_COLORS[yellow] = white;
+OPPOSITE_COLORS[blue] = green;
+OPPOSITE_COLORS[green] = blue;
+OPPOSITE_COLORS[red] = orange;
+OPPOSITE_COLORS[orange] = red;
 
 window.addEventListener('pointerdown', (e) => {
   if (!isActive) return;
@@ -239,7 +249,7 @@ window.addEventListener('pointerup', (e) => {
   }
 });
 
-const ALL_COLORS = [0xFFFFFF, 0xFFD500, 0x0051BA, 0x009E60, 0xC41E3A, 0xFF5800];
+const ALL_COLORS = [white, yellow, blue, green, red, orange];
 const VALID_CORNERS = [];
 for (let i = 0; i < ALL_COLORS.length; i++) {
   for (let j = i + 1; j < ALL_COLORS.length; j++) {
@@ -348,12 +358,15 @@ errorPopupOverlay.addEventListener('click', (e) => {
   if (e.target === errorPopupOverlay) errorPopupOverlay.classList.add('d-none');
 });
 
-const HEX_TO_NAME = {
-  0xFFFFFF: 'white', 0xFFD500: 'yellow', 0x0051BA: 'blue',
-  0x009E60: 'green', 0xC41E3A: 'red', 0xFF5800: 'orange',
-  0xDFBD28: 'yellow', 0x2A62C9: 'blue', 0x3DBD62: 'green'
-};
-const EXPECTED_COLORS = [0xFFFFFF, 0xFFD500, 0x0051BA, 0x009E60, 0xC41E3A, 0xFF5800];
+const HEX_TO_NAME = {};
+HEX_TO_NAME[white] = 'white';
+HEX_TO_NAME[yellow] = 'yellow';
+HEX_TO_NAME[blue] = 'blue';
+HEX_TO_NAME[green] = 'green';
+HEX_TO_NAME[red] = 'red';
+HEX_TO_NAME[orange] = 'orange';
+
+const EXPECTED_COLORS = [white, yellow, blue, green, red, orange];
 
 function showErrorPopup(messages) {
   errorList.innerHTML = '';
@@ -367,14 +380,13 @@ function showErrorPopup(messages) {
 }
 
 function getCubeArray2x2() {
-  const colorMap = {
-    0xDFBD28: 0, 0xFFD500: 0, // D
-    0x3DBD62: 1, 0x009E60: 1, // L
-    0xFF5800: 2,              // B
-    0xFFFFFF: 3,              // U
-    0x2A62C9: 4, 0x0051BA: 4, // R
-    0xC41E3A: 5               // F
-  };
+  const colorMap = {};
+  colorMap[yellow] = 0;
+  colorMap[green] = 1;
+  colorMap[orange] = 2;
+  colorMap[white] = 3;
+  colorMap[blue] = 4;
+  colorMap[red] = 5;
 
   let getColorIndex = (x, y, z, faceAxis) => {
     const cubie = cubies.find(c => Math.abs(c.position.x - x) < 0.1 && Math.abs(c.position.y - y) < 0.1 && Math.abs(c.position.z - z) < 0.1);
