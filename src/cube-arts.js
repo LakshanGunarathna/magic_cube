@@ -54,15 +54,15 @@ function initFilters() {
       } else {
         // Remove "All" active state
         document.querySelector('.sidebar-item[data-filter-type="All"]').classList.remove('active');
-        
+
         if (type === 'type') {
           if (typeFilter === value) {
-             typeFilter = 'All';
-             item.classList.remove('active');
+            typeFilter = 'All';
+            item.classList.remove('active');
           } else {
-             typeFilter = value;
-             document.querySelectorAll('.sidebar-item[data-filter-type="type"]').forEach(i => i.classList.remove('active'));
-             item.classList.add('active');
+            typeFilter = value;
+            document.querySelectorAll('.sidebar-item[data-filter-type="type"]').forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
           }
         } else if (type === 'difficulty') {
           if (diffFilter === value) {
@@ -74,7 +74,7 @@ function initFilters() {
             item.classList.add('active');
           }
         }
-        
+
         // If both are All, re-activate "All"
         if (typeFilter === 'All' && diffFilter === 'All') {
           document.querySelector('.sidebar-item[data-filter-type="All"]').classList.add('active');
@@ -101,7 +101,7 @@ function renderCards() {
     el.innerHTML = `
       <img src="${p.imageUrl}" alt="${p.name}" class="cube-art-img" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiMzMzMiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1zaXplPSIyMCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJjdW50cmFsIj5QYXR0ZXJuPC90ZXh0Pjwvc3ZnPg=='"/>
       <div class="cube-art-body">
-        <div class="cube-art-title">${p.name}</div>
+        <div class="cube-art-title">${p.id} - ${p.name}</div>
         <div class="cube-art-meta">
           <span class="meta-badge">${p.type}</span>
           <span class="meta-badge">${p.difficulty}</span>
@@ -160,7 +160,7 @@ let isModalActive = false;
 function initModalScene() {
   modalScene = new THREE.Scene();
   modalCamera = new THREE.PerspectiveCamera(45, modalCubeContainer.clientWidth / modalCubeContainer.clientHeight, 0.1, 100);
-  modalCamera.position.set(5, 5, 8);
+  modalCamera.position.set(3.3, 3.3, 4.9);
 
   modalRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   modalRenderer.setSize(modalCubeContainer.clientWidth, modalCubeContainer.clientHeight);
@@ -171,6 +171,7 @@ function initModalScene() {
   modalControls.enableDamping = true;
   modalControls.dampingFactor = 0.05;
   modalControls.enablePan = false;
+  modalControls.enableZoom = false;
 
   const ambient = new THREE.AmbientLight(0xffffff, 2.5);
   modalScene.add(ambient);
@@ -423,6 +424,11 @@ function updatePlaybackUI() {
   const solutionText = document.getElementById('artSolutionText');
   const btnSideBack = document.getElementById('btnArtSideBack');
   const btnSideNext = document.getElementById('btnArtSideNext');
+  const artBadge = document.getElementById('artBadge');
+
+  if (currentPattern) {
+    artBadge.innerText = `${currentPattern.id} - ${currentPattern.name}`;
+  }
 
   // View button should ONLY be visible when the pattern is fully completed
   if (currentStepIndex >= solutionSteps.length && lastActionDirection === 1) {
@@ -432,7 +438,7 @@ function updatePlaybackUI() {
   }
 
   if (currentStepIndex === 0 && lastActionDirection === 1) {
-    humanInstruction.innerText = "READY TO LEARN: " + currentPattern.name.toUpperCase();
+    humanInstruction.innerText = "READY TO MAKE";
     solutionText.innerHTML = `Hold your SOLVED Cube as shown below, press "Next" to start.`;
     btnSideBack.disabled = true;
     btnSideNext.disabled = false;
@@ -477,7 +483,7 @@ function openPatternModal() {
 
   isModalActive = true;
   patternViewOverlay.classList.remove('d-none');
-  modalPatternName.innerText = currentPattern.name;
+  modalPatternName.innerText = currentPattern.id + " - " + currentPattern.name;
 
   // Sync modal cube with current cube
   modalCubies.forEach(c => modalCubeGroup.remove(c));
@@ -490,6 +496,13 @@ function openPatternModal() {
     modalCubeGroup.add(clone);
     modalCubies.push(clone);
   });
+
+  // Dynamic zoom for modal view
+  if (currentPattern && currentPattern.type === '2x2x2') {
+    modalCamera.position.set(2.5, 2.5, 3.75);
+  } else {
+    modalCamera.position.set(3.3, 3.3, 4.9);
+  }
 
   // Handle resize for modal
   const width = modalCubeContainer.clientWidth;

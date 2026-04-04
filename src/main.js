@@ -12,7 +12,7 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.shadowMap.enabled = false;
 document.getElementById('app').appendChild(renderer.domElement);
-document.body.style.background = 'radial-gradient(ellipse at center, #ffffff 0%, #a8d4f5 100%)';
+//document.body.style.background = 'radial-gradient(ellipse at center, #ffffff 0%, #a8d4f5 100%)';
 
 renderer.setClearColor(0x000000, 0);
 

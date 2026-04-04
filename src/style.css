@@ -23,7 +23,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: radial-gradient(circle at center, #3b0764 0%, #0f172a 100%);
+  background: radial-gradient(circle at center, #F5F7FA 0%, #C3CFE2 100%);
 }
 
 #app {
@@ -323,6 +323,23 @@ button:active {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+}
+
+.art-badge {
+  position: absolute;
+  top: 2rem;
+  left: 2rem;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.25);
+  color: #1e3a5f;
+  padding: 0.8rem 1.5rem;
+  border-radius: 14px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
 }
 
 .playback-instruction h2 {
@@ -693,7 +710,7 @@ button:active {
 }
 
 .cube-art-card {
-  background: rgba(15, 23, 42, 0.4);
+  background: rgba(18, 26, 44, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 20px;
   overflow: hidden;
@@ -714,15 +731,14 @@ button:active {
 
 .cube-art-img {
   width: 100%;
-  height: 220px;
+  height: 230px;
   object-fit: contain;
-  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
-  padding: 1.5rem;
+  padding: 1.4rem;
   transition: transform 0.4s ease;
 }
 
 .cube-art-card:hover .cube-art-img {
-  transform: scale(1.1);
+  transform: scale(1.3);
 }
 
 .cube-art-body {
