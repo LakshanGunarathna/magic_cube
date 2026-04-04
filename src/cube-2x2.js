@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import * as TWEEN from '@tweenjs/tween.js';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 
-const container = document.getElementById('app');
+const container = document.getElementById('app-2x2-main');
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
 camera.position.set(5, 5, 8);
@@ -21,7 +21,7 @@ const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
 controls.enablePan = false;
-controls.enableZoom = false; // Disable zoom option
+controls.enableZoom = false;
 
 const ambientLight = new THREE.AmbientLight(0xffffff, 2.5);
 scene.add(ambientLight);
@@ -70,9 +70,9 @@ const getStickerMat = (color) => new THREE.MeshStandardMaterial({
   bumpScale: 0.003
 });
 
-for (let x = -1; x <= 1; x++) {
-  for (let y = -1; y <= 1; y++) {
-    for (let z = -1; z <= 1; z++) {
+for (let x of [-0.5, 0.5]) {
+  for (let y of [-0.5, 0.5]) {
+    for (let z of [-0.5, 0.5]) {
       const cubieGroup = new THREE.Group();
       cubieGroup.position.set(x, y, z);
 
@@ -87,12 +87,12 @@ for (let x = -1; x <= 1; x++) {
         cubieGroup.add(stick);
       };
 
-      if (x === 1) addSticker(stickerGeometryX, colors.right, [0.49, 0, 0]);
-      if (x === -1) addSticker(stickerGeometryX, colors.left, [-0.49, 0, 0]);
-      if (y === 1) addSticker(stickerGeometryY, colors.top, [0, 0.49, 0]);
-      if (y === -1) addSticker(stickerGeometryY, colors.bottom, [0, -0.49, 0]);
-      if (z === 1) addSticker(stickerGeometryZ, colors.front, [0, 0, 0.49]);
-      if (z === -1) addSticker(stickerGeometryZ, colors.back, [0, 0, -0.49]);
+      if (x === 0.5) addSticker(stickerGeometryX, colors.right, [0.49, 0, 0]);
+      if (x === -0.5) addSticker(stickerGeometryX, colors.left, [-0.49, 0, 0]);
+      if (y === 0.5) addSticker(stickerGeometryY, colors.top, [0, 0.49, 0]);
+      if (y === -0.5) addSticker(stickerGeometryY, colors.bottom, [0, -0.49, 0]);
+      if (z === 0.5) addSticker(stickerGeometryZ, colors.front, [0, 0, 0.49]);
+      if (z === -0.5) addSticker(stickerGeometryZ, colors.back, [0, 0, -0.49]);
 
       cubeGroup.add(cubieGroup);
       cubies.push(cubieGroup);
@@ -100,9 +100,11 @@ for (let x = -1; x <= 1; x++) {
   }
 }
 
+// Visual scaling
+cubeGroup.scale.set(1.5, 1.5, 1.5);
+
 let isAnimating = false;
 let isActive = false;
-let currentMode = '';
 let moveHistory = [];
 
 function rotateLayer(axis, layer, angle, duration = 300, record = true) {
@@ -113,7 +115,7 @@ function rotateLayer(axis, layer, angle, duration = 300, record = true) {
     if (isAnimating && duration > 0) return;
     isAnimating = true;
 
-    const activeCubies = cubies.filter(c => Math.abs(Math.round(c.position[axis]) - layer) < 0.1);
+    const activeCubies = cubies.filter(c => Math.abs(c.position[axis] - layer) < 0.1);
 
     const pivot = new THREE.Group();
     cubeGroup.add(pivot);
@@ -139,9 +141,9 @@ function finishRotation(pivot, activeCubies, resolve) {
   pivot.updateMatrixWorld();
   activeCubies.forEach(c => {
     cubeGroup.attach(c);
-    c.position.x = Math.round(c.position.x);
-    c.position.y = Math.round(c.position.y);
-    c.position.z = Math.round(c.position.z);
+    c.position.x = Math.round(c.position.x * 2) / 2;
+    c.position.y = Math.round(c.position.y * 2) / 2;
+    c.position.z = Math.round(c.position.z * 2) / 2;
 
     const euler = new THREE.Euler().setFromQuaternion(c.quaternion);
     euler.x = Math.round(euler.x / (Math.PI / 2)) * (Math.PI / 2);
@@ -155,16 +157,16 @@ function finishRotation(pivot, activeCubies, resolve) {
 }
 
 const MOVES = {
-  'L': ['x', -1, Math.PI / 2], 'M': ['x', 0, Math.PI / 2], 'R': ['x', 1, -Math.PI / 2],
-  'U': ['y', 1, -Math.PI / 2], 'E': ['y', 0, Math.PI / 2], 'D': ['y', -1, Math.PI / 2],
-  'F': ['z', 1, -Math.PI / 2], 'S': ['z', 0, -Math.PI / 2], 'B': ['z', -1, Math.PI / 2],
-  'L_prime': ['x', -1, -Math.PI / 2], 'M_prime': ['x', 0, -Math.PI / 2], 'R_prime': ['x', 1, Math.PI / 2],
-  'U_prime': ['y', 1, Math.PI / 2], 'E_prime': ['y', 0, -Math.PI / 2], 'D_prime': ['y', -1, -Math.PI / 2],
-  'F_prime': ['z', 1, Math.PI / 2], 'S_prime': ['z', 0, Math.PI / 2], 'B_prime': ['z', -1, -Math.PI / 2]
+  'L': ['x', -0.5, Math.PI / 2], 'R': ['x', 0.5, -Math.PI / 2],
+  'U': ['y', 0.5, -Math.PI / 2], 'D': ['y', -0.5, Math.PI / 2],
+  'F': ['z', 0.5, -Math.PI / 2], 'B': ['z', -0.5, Math.PI / 2],
+  'L_prime': ['x', -0.5, -Math.PI / 2], 'R_prime': ['x', 0.5, Math.PI / 2],
+  'U_prime': ['y', 0.5, Math.PI / 2], 'D_prime': ['y', -0.5, -Math.PI / 2],
+  'F_prime': ['z', 0.5, Math.PI / 2], 'B_prime': ['z', -0.5, -Math.PI / 2]
 };
 
 Object.keys(MOVES).forEach(key => {
-  const btn = document.getElementById('btn' + key);
+  const btn = document.getElementById('btn' + key + '-2x2');
   if (btn) {
     btn.addEventListener('click', () => {
       if (!isAnimating && isActive) rotateLayer(...MOVES[key], 300);
@@ -172,82 +174,54 @@ Object.keys(MOVES).forEach(key => {
   }
 });
 
-const shuffleBtn = document.getElementById('shuffleBtn');
+const shuffleBtn = document.getElementById('shuffleBtn-2x2');
 if (shuffleBtn) {
   shuffleBtn.addEventListener('click', async () => {
     if (isAnimating || !isActive) return;
-    
-    // Use only base moves for cleaner picking logic
-    const BASE_KEYS = ['L', 'M', 'R', 'U', 'E', 'D', 'F', 'S', 'B'];
+    const BASE_KEYS = ['L', 'R', 'U', 'D', 'F', 'B'];
     let lastMove = { axis: '', layer: 0, dir: 0 };
-    
-    for (let i = 0; i < 25; i++) { // Increased shuffle count to compensate for speed
+    for (let i = 0; i < 20; i++) {
       let randomKey, m, dir;
-      
-      // Prevent redundant inverse moves (e.g., L then L')
       do {
         randomKey = BASE_KEYS[Math.floor(Math.random() * BASE_KEYS.length)];
         m = MOVES[randomKey];
         dir = Math.random() > 0.5 ? 1 : -1;
       } while (m[0] === lastMove.axis && m[1] === lastMove.layer && dir === -lastMove.dir);
-      
+
       lastMove = { axis: m[0], layer: m[1], dir: dir };
-      // Faster rotation speed (300ms) for shuffling
-      await rotateLayer(m[0], m[1], m[2] * dir, 300);
+      await rotateLayer(m[0], m[1], m[2] * dir, 250);
     }
   });
 }
 
-const resetBtn = document.getElementById('resetBtn');
+const resetBtn = document.getElementById('resetBtn-2x2');
 if (resetBtn) {
   resetBtn.addEventListener('click', async () => {
     if (isAnimating || !isActive || moveHistory.length === 0) return;
-
-    // Create a copy of the history to reverse, and clear the main history
     const historyToReverse = [...moveHistory];
     moveHistory = [];
-
-    // Rotate each move back in reverse order
     for (let i = historyToReverse.length - 1; i >= 0; i--) {
       const m = historyToReverse[i];
-      // Use a faster duration (150ms) for a snappier reset
       await rotateLayer(m.axis, m.layer, -m.angle, 150, false);
     }
   });
 }
 
-const resetOrientationBtn = document.getElementById('resetOrientationBtn');
+const resetOrientationBtn = document.getElementById('resetOrientationBtn-2x2');
 if (resetOrientationBtn) {
   resetOrientationBtn.addEventListener('click', () => {
     if (!isActive) return;
-    
-    // Smoothly animate camera and controls target back to original state
-    new TWEEN.Tween(camera.position)
-      .to({ x: 5, y: 5, z: 8 }, 500)
-      .easing(TWEEN.Easing.Quadratic.Out)
-      .start();
-    
-    new TWEEN.Tween(controls.target)
-      .to({ x: 0, y: 0, z: 0 }, 500)
-      .easing(TWEEN.Easing.Quadratic.Out)
-      .start();
+    new TWEEN.Tween(camera.position).to({ x: 5, y: 5, z: 8 }, 500).easing(TWEEN.Easing.Quadratic.Out).start();
+    new TWEEN.Tween(controls.target).to({ x: 0, y: 0, z: 0 }, 500).easing(TWEEN.Easing.Quadratic.Out).start();
   });
 }
 
 window.addEventListener('route-changed', (e) => {
   const path = e.detail;
-  currentMode = path;
-  if (path === '/cubes/3x3x3 cube' || path === '/cubes/3x3x3-cube') {
+  if (path === '/cubes/2x2x2 cube' || path === '/cubes/2x2x2-cube') {
     isActive = true;
     controls.enableRotate = true;
-    controls.enableZoom = false; // Keep zoom disabled
-
-    scene.traverse(child => {
-      if (child.userData.isSticker && child.userData.originalColor) {
-        child.material.color.setHex(child.userData.originalColor);
-      }
-    });
-
+    controls.enableZoom = false;
   } else {
     isActive = false;
   }

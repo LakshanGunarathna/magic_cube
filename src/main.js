@@ -4,6 +4,7 @@ let currentMode = 'home';
 const appContainer = document.getElementById('app');
 const homeView = document.getElementById('home-view');
 const cube3x3View = document.getElementById('cube-3x3-view');
+const cube2x2View = document.getElementById('cube-2x2-view');
 const comingSoonView = document.getElementById('coming-soon-view');
 
 const navBtns = document.querySelectorAll('.navbar [data-route]');
@@ -49,9 +50,16 @@ function updateViewBasedOnRoute() {
   }
 
   // Reset views
-  [homeView, cube3x3View, comingSoonView].forEach(v => {
+  [homeView, cube3x3View, cube2x2View, comingSoonView].forEach(v => {
     if (v) v.classList.add('d-none');
   });
+
+  // Hide all 3D containers
+  ['app', 'app-2x2-main', 'app-3x3', 'app-2x2', 'app-cube-arts'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+
   const s3x3 = document.getElementById('solve-3x3-view');
   if (s3x3) s3x3.classList.add('d-none');
   const s2x2 = document.getElementById('solve-2x2-view');
@@ -61,36 +69,34 @@ function updateViewBasedOnRoute() {
   const cubeArtsPlayerView = document.getElementById('cube-arts-player-view');
   if (cubeArtsPlayerView) cubeArtsPlayerView.classList.add('d-none');
 
-  appContainer.style.display = 'block';
   currentMode = path;
 
   if (path === '' || path === '/') {
-    appContainer.style.display = 'none';
     homeView.classList.remove('d-none');
 
   } else if (path === '/cubes/3x3x3 cube' || path === '/cubes/3x3x3-cube') {
-    appContainer.style.display = 'block';
+    if (appContainer) appContainer.style.display = 'block';
     if (cube3x3View) cube3x3View.classList.remove('d-none');
 
+  } else if (path === '/cubes/2x2x2 cube' || path === '/cubes/2x2x2-cube') {
+    const app2x2Main = document.getElementById('app-2x2-main');
+    if (app2x2Main) app2x2Main.style.display = 'block';
+    if (cube2x2View) cube2x2View.classList.remove('d-none');
+
   } else if (path === '/solver/3x3x3 cube' || path === '/solver/3x3x3-cube') {
-    appContainer.style.display = 'none';
     if (s3x3) s3x3.classList.remove('d-none');
 
   } else if (path === '/solver/2x2x2 cube' || path === '/solver/2x2x2-cube') {
-    appContainer.style.display = 'none';
     if (s2x2) s2x2.classList.remove('d-none');
 
   } else if (path === '/cube-arts') {
-    appContainer.style.display = 'none';
     if (cubeArtsView) cubeArtsView.classList.remove('d-none');
 
   } else if (path.startsWith('/cube-arts/play')) {
-    appContainer.style.display = 'none';
     if (cubeArtsPlayerView) cubeArtsPlayerView.classList.remove('d-none');
 
   } else {
     // Other routes go to coming soon
-    appContainer.style.display = 'none';
     const comingSoonTitle = document.getElementById('coming-soon-title');
     if (comingSoonTitle) comingSoonTitle.innerText = getTitleFromPath(path) || 'FEATURE';
     comingSoonView.classList.remove('d-none');
@@ -99,5 +105,7 @@ function updateViewBasedOnRoute() {
   window.dispatchEvent(new CustomEvent('route-changed', { detail: path }));
 }
 
-// Initial route
-updateViewBasedOnRoute();
+// Initial route update after all modules are loaded
+window.addEventListener('load', () => {
+  updateViewBasedOnRoute();
+});

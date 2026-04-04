@@ -44,11 +44,12 @@
   </div>
 
   <div id="cube-3x3-view" class="d-none">
-    <div id="uicontainer">
-      <h1>Unscramble3D</h1>
+    <div class="art-badge">3x3 Cube</div>
+    <div class="uicontainer-overlay">
       <div class="controls">
         <button id="shuffleBtn">Shuffle</button>
         <button id="resetBtn">Reset</button>
+        <button id="resetOrientationBtn">Reset Orientation</button>
       </div>
     </div>
     <div class="slice-controls">
@@ -61,10 +62,47 @@
       <button id="btnF">F</button>
       <button id="btnS">S</button>
       <button id="btnB">B</button>
+      <div class="divider"></div>
+      <button id="btnL_prime">L'</button>
+      <button id="btnM_prime">M'</button>
+      <button id="btnR_prime">R'</button>
+      <button id="btnU_prime">U'</button>
+      <button id="btnE_prime">E'</button>
+      <button id="btnD_prime">D'</button>
+      <button id="btnF_prime">F'</button>
+      <button id="btnS_prime">S'</button>
+      <button id="btnB_prime">B'</button>
+    </div>
+  </div>
+
+  <div id="cube-2x2-view" class="d-none">
+    <div class="art-badge">2x2 Cube</div>
+    <div class="uicontainer-overlay">
+      <div class="controls">
+        <button id="shuffleBtn-2x2">Shuffle</button>
+        <button id="resetBtn-2x2">Reset</button>
+        <button id="resetOrientationBtn-2x2">Reset Orientation</button>
+      </div>
+    </div>
+    <div class="slice-controls">
+      <button id="btnL-2x2">L</button>
+      <button id="btnR-2x2">R</button>
+      <button id="btnU-2x2">U</button>
+      <button id="btnD-2x2">D</button>
+      <button id="btnF-2x2">F</button>
+      <button id="btnB-2x2">B</button>
+      <div class="divider"></div>
+      <button id="btnL_prime-2x2">L'</button>
+      <button id="btnR_prime-2x2">R'</button>
+      <button id="btnU_prime-2x2">U'</button>
+      <button id="btnD_prime-2x2">D'</button>
+      <button id="btnF_prime-2x2">F'</button>
+      <button id="btnB_prime-2x2">B'</button>
     </div>
   </div>
 
   <div id="solve-3x3-view" class="d-none">
+    <div class="art-badge">3x3 Cube Solver</div>
     <div id="paint-phase-3x3">
       <div class="palette-container" style="top: 1rem;">
         <h2>Select Color to Paint</h2>
@@ -90,6 +128,7 @@
     </div>
 
     <div id="playback-phase-3x3" class="d-none">
+      <div class="art-badge">3x3 Cube Solver</div>
       <div class="playback-instruction">
         <h2 id="humanInstruction-3x3">READY TO SOLVE!</h2>
         <p id="solutionText-3x3">Hold your Cube as shown below, Press "Next" to start.</p>
@@ -101,6 +140,7 @@
   </div>
 
   <div id="solve-2x2-view" class="d-none">
+    <div class="art-badge">2x2 Cube Solver</div>
     <div id="paint-phase-2x2">
       <div class="palette-container" style="top: 1rem;">
         <h2>Select Color to Paint</h2>
@@ -126,6 +166,7 @@
     </div>
 
     <div id="playback-phase-2x2" class="d-none">
+      <div class="art-badge">2x2 Cube Solver</div>
       <div class="playback-instruction">
         <h2 id="humanInstruction-2x2">READY TO SOLVE!</h2>
         <p id="solutionText-2x2">Hold your Cube as shown below, Press "Next" to start.</p>
@@ -240,12 +281,14 @@
   </div>
 
   <div id="app"></div>
+  <div id="app-2x2-main" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:1; display:none;"></div>
   <div id="app-3x3" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:1; display:none;"></div>
   <div id="app-2x2" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:1; display:none;"></div>
   <div id="app-cube-arts" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:1; display:none;">
   </div>
   <script type="module" src="./src/main.js"></script>
   <script type="module" src="./src/cube-3x3.js"></script>
+  <script type="module" src="./src/cube-2x2.js"></script>
   <script type="module" src="./src/solver-3x3.js"></script>
   <script type="module" src="./src/solver-2x2.js"></script>
   <script type="module" src="./src/cube-arts.js"></script>

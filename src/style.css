@@ -35,7 +35,8 @@ body {
   z-index: 1;
 }
 
-#uicontainer {
+#uicontainer,
+.uicontainer-overlay {
   position: absolute;
   top: 2rem;
   left: 50%;
@@ -116,6 +117,13 @@ button:active {
   align-items: center;
   justify-content: center;
   font-weight: 700;
+}
+.divider {
+  width: 1px;
+  height: 24px;
+  background: var(--glass-border);
+  align-self: center;
+  margin: 0 0.25rem;
 }
 
 @media (max-width: 600px) {
