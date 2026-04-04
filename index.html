@@ -177,6 +177,44 @@
     </div>
   </div>
 
+  <div id="solve-4x4-view" class="d-none">
+    <div class="art-badge">4x4 Cube Solver</div>
+    <div id="paint-phase-4x4">
+      <div class="palette-container" style="top: 1rem;">
+        <h2>Select Color to Paint</h2>
+        <div class="color-palette-4x4" style="display: flex; gap: 1rem; pointer-events: auto;">
+        </div>
+      </div>
+
+      <div class="paint-footer">
+        <button id="btnPaintReset-4x4" class="action-btn">Reset</button>
+
+        <div class="cube-rotators">
+          <button id="rotLeft-4x4" class="icon-btn">&#8592;</button>
+          <button id="rotUp-4x4" class="icon-btn">&#8593;</button>
+          <button id="rotDown-4x4" class="icon-btn">&#8595;</button>
+          <button id="rotRight-4x4" class="icon-btn">&#8594;</button>
+        </div>
+
+        <div style="display: flex; gap: 1rem; align-items: center;">
+          <p id="solver-status-4x4" class="solver-status"></p>
+          <button id="btnStartSolve-4x4" class="action-btn primary">Solve!</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="playback-phase-4x4" class="d-none">
+      <div class="art-badge">4x4 Cube Solver</div>
+      <div class="playback-instruction">
+        <h2 id="humanInstruction-4x4">COMING SOON</h2>
+        <p id="solutionText-4x4">4x4 solver is under development.</p>
+      </div>
+
+      <button id="btnSideBack-4x4" class="side-nav left-nav" disabled>&lt; Back</button>
+      <button id="btnSideNext-4x4" class="side-nav right-nav">Next &gt;</button>
+    </div>
+  </div>
+
   <div id="coming-soon-view" class="d-none">
     <h1><span id="coming-soon-title"></span><br><span>Coming Soon</span></h1>
   </div>
@@ -235,6 +273,7 @@
 
   <div id="cubeSolvedMsg-3x3" class="d-none cube-solved-msg">🎉 CUBE SOLVED!</div>
   <div id="cubeSolvedMsg-2x2" class="d-none cube-solved-msg">🎉 CUBE SOLVED!</div>
+  <div id="cubeSolvedMsg-4x4" class="d-none cube-solved-msg">🎉 CUBE SOLVED!</div>
 
   <div id="errorPopupOverlay-3x3" class="error-popup-overlay d-none">
     <div class="error-popup">
@@ -253,6 +292,16 @@
       <ul id="errorList-2x2"></ul>
       <p class="error-footer">After fixing the coloring issues press "Solve!" again.</p>
       <button id="errorPopupClose-2x2" class="error-popup-btn">OK</button>
+    </div>
+  </div>
+
+  <div id="errorPopupOverlay-4x4" class="error-popup-overlay d-none">
+    <div class="error-popup">
+      <h3>⚠️ Your Cube is not colored correctly</h3>
+      <p class="error-subtitle">You should consider the following:</p>
+      <ul id="errorList-4x4"></ul>
+      <p class="error-footer">After fixing the coloring issues press "Solve!" again.</p>
+      <button id="errorPopupClose-4x4" class="error-popup-btn">OK</button>
     </div>
   </div>
 
@@ -280,10 +329,23 @@
     </div>
   </div>
 
+  <div id="confirmResetOverlay-4x4" class="error-popup-overlay d-none">
+    <div class="error-popup">
+      <h3>🔄 Reset Coloring?</h3>
+      <p class="error-subtitle">If you continue your current coloring will be lost.</p>
+      <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1rem;">
+        <button id="confirmResetCancel-4x4" class="error-popup-btn">Cancel</button>
+        <button id="confirmResetOk-4x4" class="error-popup-btn"
+          style="background: rgba(220, 38, 38, 0.2) !important; border-color: rgba(220, 38, 38, 0.3) !important; color: #b91c1c !important;">Reset</button>
+      </div>
+    </div>
+  </div>
+
   <div id="app"></div>
   <div id="app-2x2-main" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:1; display:none;"></div>
   <div id="app-3x3" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:1; display:none;"></div>
   <div id="app-2x2" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:1; display:none;"></div>
+  <div id="app-4x4" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:1; display:none;"></div>
   <div id="app-cube-arts" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:1; display:none;">
   </div>
   <script type="module" src="./src/main.js"></script>
@@ -292,6 +354,7 @@
   <script type="module" src="./src/solver-3x3.js"></script>
   <script type="module" src="./src/solver-2x2.js"></script>
   <script type="module" src="./src/cube-arts.js"></script>
+  <script type="module" src="./src/solver-4x4.js"></script>
 </body>
 
 </html>

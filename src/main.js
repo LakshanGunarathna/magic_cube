@@ -55,7 +55,7 @@ function updateViewBasedOnRoute() {
   });
 
   // Hide all 3D containers
-  ['app', 'app-2x2-main', 'app-3x3', 'app-2x2', 'app-cube-arts'].forEach(id => {
+  ['app', 'app-2x2-main', 'app-3x3', 'app-2x2', 'app-4x4', 'app-cube-arts'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
@@ -64,6 +64,8 @@ function updateViewBasedOnRoute() {
   if (s3x3) s3x3.classList.add('d-none');
   const s2x2 = document.getElementById('solve-2x2-view');
   if (s2x2) s2x2.classList.add('d-none');
+  const s4x4 = document.getElementById('solve-4x4-view');
+  if (s4x4) s4x4.classList.add('d-none');
   const cubeArtsView = document.getElementById('cube-arts-view');
   if (cubeArtsView) cubeArtsView.classList.add('d-none');
   const cubeArtsPlayerView = document.getElementById('cube-arts-player-view');
@@ -88,6 +90,9 @@ function updateViewBasedOnRoute() {
 
   } else if (path === '/solver/2x2x2 cube' || path === '/solver/2x2x2-cube') {
     if (s2x2) s2x2.classList.remove('d-none');
+
+  } else if (path === '/solver/4x4x4 cube' || path === '/solver/4x4x4-cube') {
+    if (s4x4) s4x4.classList.remove('d-none');
 
   } else if (path === '/cube-arts') {
     if (cubeArtsView) cubeArtsView.classList.remove('d-none');
