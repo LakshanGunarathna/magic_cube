@@ -131,6 +131,7 @@ button:active {
   display: none !important;
 }
 
+#home-view,
 #coming-soon-view {
   display: flex;
   justify-content: center;
@@ -730,10 +731,9 @@ button:active {
 }
 
 .cube-art-img {
-  width: 100%;
-  height: 230px;
+  border-radius: 30px;
   object-fit: contain;
-  padding: 1.4rem;
+  padding: 1rem;
   transition: transform 0.4s ease;
 }
 
@@ -742,8 +742,11 @@ button:active {
 }
 
 .cube-art-body {
-  padding: 1.5rem;
+  padding: 1rem;
   background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.2));
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .cube-art-title {
@@ -757,6 +760,7 @@ button:active {
   display: flex;
   flex-wrap: wrap;
   gap: 0.6rem;
+  margin-top: auto;
 }
 
 .meta-badge {

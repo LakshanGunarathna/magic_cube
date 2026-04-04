@@ -5,21 +5,21 @@
       "name": "Checkerboard",
       "difficulty": "Easy",
       "moves": "U R F2 U R F2 R U F' R",
-      "imageUrl": "/public/assets/cube-arts-checkerboard.png"
+      "imageUrl": "/public/assets/2x2_1.png"
     },
     {
       "id": "2x2#2",
       "name": "Zig Zag",
       "difficulty": "Easy",
       "moves": "U2 R2 F2",
-      "imageUrl": "/public/assets/cube-arts-checkerboard.png"
+      "imageUrl": "/public/assets/2x2_1.png"
     },
     {
       "id": "2x2#3",
       "name": "Cube in a Cube",
       "difficulty": "Medium",
       "moves": "R F U' R2 U F' R U F2 R2",
-      "imageUrl": "/public/assets/cube-arts-cube-in-a-cube.png"
+      "imageUrl": "/public/assets/2x2_1.png"
     },
     {
       "id": "2x2#4",
@@ -70,7 +70,7 @@
       "name": "Wire",
       "difficulty": "Medium",
       "moves": "R L F B R L F B R L F B R2 B2 L2 R2 B2 L2",
-      "imageUrl": "/public/assets/cube-arts-wire.png"
+      "imageUrl": "/public/assets/2x2_1.png"
     },
     {
       "id": "3x3#7",
@@ -84,7 +84,7 @@
       "name": "Perfect Scramble",
       "difficulty": "Easy",
       "moves": "U F' L' U' R2 F' R2 B' U' R F' U F D' L2 F2 L2 U'",
-      "imageUrl": "/public/assets/cube-arts-perfect-scramble.png"
+      "imageUrl": "/public/assets/2x2_1.png"
     },
     {
       "id": "3x3#9",
