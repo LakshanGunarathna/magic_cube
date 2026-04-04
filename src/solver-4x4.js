@@ -152,12 +152,109 @@ window.addEventListener('route-changed', (e) => {
     document.getElementById('solver-status-4x4').innerText = "";
     document.getElementById('cubeSolvedMsg-4x4').classList.add('d-none');
   } else {
-    isActive = false;
+    document.getElementById('solve-4x4-view').classList.add('d-none');
     container.style.display = 'none';
     const solvedMsg = document.getElementById('cubeSolvedMsg-4x4');
     if (solvedMsg) solvedMsg.classList.add('d-none');
   }
 });
+
+const OPPOSITE_COLORS = {};
+OPPOSITE_COLORS[white] = yellow;
+OPPOSITE_COLORS[yellow] = white;
+OPPOSITE_COLORS[blue] = green;
+OPPOSITE_COLORS[green] = blue;
+OPPOSITE_COLORS[red] = orange;
+OPPOSITE_COLORS[orange] = red;
+
+const ALL_COLORS = [white, yellow, blue, green, red, orange];
+
+const VALID_EDGES = [];
+for (let i = 0; i < ALL_COLORS.length; i++) {
+  for (let j = i + 1; j < ALL_COLORS.length; j++) {
+    const c1 = ALL_COLORS[i];
+    const c2 = ALL_COLORS[j];
+    if (OPPOSITE_COLORS[c1] !== c2) {
+      VALID_EDGES.push([c1, c2]);
+    }
+  }
+}
+
+const VALID_CORNERS = [];
+for (let i = 0; i < ALL_COLORS.length; i++) {
+  for (let j = i + 1; j < ALL_COLORS.length; j++) {
+    for (let k = j + 1; k < ALL_COLORS.length; k++) {
+      const c1 = ALL_COLORS[i];
+      const c2 = ALL_COLORS[j];
+      const c3 = ALL_COLORS[k];
+      if (OPPOSITE_COLORS[c1] !== c2 && OPPOSITE_COLORS[c1] !== c3 && OPPOSITE_COLORS[c2] !== c3) {
+        VALID_CORNERS.push([c1, c2, c3]);
+      }
+    }
+  }
+}
+
+function autoDeducePieces() {
+  let madeChanges = false;
+  const pieces = [];
+  cubies.forEach(cubie => {
+    const stickers = cubie.children.filter(c => c.userData && c.userData.isSticker);
+    if (stickers.length > 1) {
+      pieces.push({
+        cubie,
+        stickers,
+        colors: stickers.map(s => s.material.color.getHex()),
+        isEdge: stickers.length === 2,
+        isCorner: stickers.length === 3
+      });
+    }
+  });
+
+  const fullyPaintedEdges = pieces.filter(p => p.isEdge && !p.colors.includes(0x555555)).map(p => p.colors);
+  const fullyPaintedCorners = pieces.filter(p => p.isCorner && !p.colors.includes(0x555555)).map(p => p.colors);
+
+  pieces.forEach(p => {
+    if (p.colors.includes(0x555555)) {
+      const paintedColors = p.colors.filter(c => c !== 0x555555);
+      if (p.isEdge && paintedColors.length === 1) {
+        const c1 = paintedColors[0];
+        const possiblePairs = VALID_EDGES.filter(pair => pair.includes(c1));
+        const remainingPairs = possiblePairs.filter(pair => {
+          const count = fullyPaintedEdges.filter(fp => fp.includes(pair[0]) && fp.includes(pair[1])).length;
+          return count < 2; // 2 wing edges per physical edge
+        });
+        if (remainingPairs.length === 1) {
+          const deducedColor = remainingPairs[0].find(c => c !== c1);
+          const unpaintedSticker = p.stickers.find(s => s.material.color.getHex() === 0x555555);
+          if (unpaintedSticker) {
+            unpaintedSticker.material = unpaintedSticker.material.clone();
+            unpaintedSticker.material.color.setHex(deducedColor);
+            madeChanges = true;
+          }
+        }
+      } else if (p.isCorner && paintedColors.length === 2) {
+        const c1 = paintedColors[0];
+        const c2 = paintedColors[1];
+        const possibleTriplets = VALID_CORNERS.filter(trip => trip.includes(c1) && trip.includes(c2));
+        const remainingTriplets = possibleTriplets.filter(trip => {
+          return !fullyPaintedCorners.some(fp => fp.includes(trip[0]) && fp.includes(trip[1]) && fp.includes(trip[2]));
+        });
+        if (remainingTriplets.length === 1) {
+          const deducedColor = remainingTriplets[0].find(c => c !== c1 && c !== c2);
+          const unpaintedSticker = p.stickers.find(s => s.material.color.getHex() === 0x555555);
+          if (unpaintedSticker) {
+            unpaintedSticker.material = unpaintedSticker.material.clone();
+            unpaintedSticker.material.color.setHex(deducedColor);
+            madeChanges = true;
+          }
+        }
+      }
+    }
+  });
+
+  if (madeChanges) autoDeducePieces();
+}
+
 
 // Color Palette Setup
 let selectedColorHex = white;
@@ -221,6 +318,10 @@ window.addEventListener('pointerup', (e) => {
   if (hit) {
     hit.object.material = hit.object.material.clone();
     hit.object.material.color.setHex(selectedColorHex);
+
+    setTimeout(() => {
+      autoDeducePieces();
+    }, 0);
   }
 });
 
@@ -244,10 +345,100 @@ document.getElementById('confirmResetOk-4x4').addEventListener('click', () => {
   });
 });
 
+const errorPopupOverlay = document.getElementById('errorPopupOverlay-4x4');
+const errorList = document.getElementById('errorList-4x4');
+document.getElementById('errorPopupClose-4x4').addEventListener('click', () => {
+  errorPopupOverlay.classList.add('d-none');
+});
+
+const HEX_TO_NAME = {};
+HEX_TO_NAME[white] = 'white';
+HEX_TO_NAME[yellow] = 'yellow';
+HEX_TO_NAME[blue] = 'blue';
+HEX_TO_NAME[green] = 'green';
+HEX_TO_NAME[red] = 'red';
+HEX_TO_NAME[orange] = 'orange';
+
+function showErrorPopup(messages) {
+  errorList.innerHTML = '';
+  messages.forEach(msg => {
+    const li = document.createElement('li');
+    li.textContent = msg;
+    errorList.appendChild(li);
+  });
+  errorPopupOverlay.classList.remove('d-none');
+  document.getElementById('solver-status-4x4').innerText = '';
+}
+
 document.getElementById('btnStartSolve-4x4').addEventListener('click', () => {
-  const statusEl = document.getElementById('solver-status-4x4');
-  statusEl.innerText = "Solver not implemented for 4x4 yet.";
-  setTimeout(() => statusEl.innerText = "", 3000);
+  try {
+    document.getElementById('solver-status-4x4').innerText = "Validating...";
+    const colorCounts = {};
+    let hasUnpainted = false;
+    const paintedPieces = [];
+
+    cubies.forEach(cubie => {
+      const stickers = cubie.children.filter(c => c.userData && c.userData.isSticker);
+      const pieceColors = [];
+      stickers.forEach(s => {
+        const hex = s.material.color.getHex();
+        if (hex === 0x555555) hasUnpainted = true;
+        else {
+          colorCounts[hex] = (colorCounts[hex] || 0) + 1;
+          pieceColors.push(hex);
+        }
+      });
+      if (pieceColors.length > 0) paintedPieces.push({ cubie, colors: pieceColors });
+    });
+
+    const EXPECTED_COLORS = [white, yellow, blue, green, red, orange];
+    const errors = [];
+    if (hasUnpainted) errors.push('You have unpainted tiles on the cube.');
+
+    EXPECTED_COLORS.forEach(hex => {
+      const count = colorCounts[hex] || 0;
+      const name = HEX_TO_NAME[hex];
+      if (count < 16) errors.push(`You do not have enough ${name} tiles.`);
+      else if (count > 16) errors.push(`You have too many ${name} tiles.`);
+    });
+
+    if (errors.length > 0) {
+      showErrorPopup(errors);
+      return;
+    }
+
+    // Piece validity check
+    let edgeErrors = 0, cornerErrors = 0;
+    paintedPieces.forEach(p => {
+      if (p.colors.length > 1) {
+        let hasError = false;
+        for (let i = 0; i < p.colors.length; i++) {
+          for (let j = i + 1; j < p.colors.length; j++) {
+            if (OPPOSITE_COLORS[p.colors[i]] === p.colors[j]) hasError = true;
+            if (p.colors[i] === p.colors[j]) hasError = true;
+          }
+        }
+        if (hasError) {
+          if (p.colors.length === 2) edgeErrors++;
+          else cornerErrors++;
+        }
+      }
+    });
+
+    if (edgeErrors || cornerErrors) {
+      const eMsg = [];
+      if (edgeErrors) eMsg.push(`${edgeErrors} edge piece(s) have invalid color combinations.`);
+      if (cornerErrors) eMsg.push(`${cornerErrors} corner piece(s) have invalid color combinations.`);
+      showErrorPopup(eMsg);
+      return;
+    }
+
+    const statusEl = document.getElementById('solver-status-4x4');
+    statusEl.innerText = "Cube is valid! Solver not implemented yet.";
+  } catch (err) {
+    showErrorPopup(['An error occurred during validation.']);
+    console.error(err);
+  }
 });
 
 // Render Loop
