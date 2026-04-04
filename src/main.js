@@ -237,14 +237,14 @@ function updateViewBasedOnRoute() {
   // Reset views
   [homeView, comingSoonView].forEach(v => v.classList.add('d-none'));
   const s3x3 = document.getElementById('solve-3x3-view');
-  if(s3x3) s3x3.classList.add('d-none');
+  if (s3x3) s3x3.classList.add('d-none');
   const s2x2 = document.getElementById('solve-2x2-view');
-  if(s2x2) s2x2.classList.add('d-none');
+  if (s2x2) s2x2.classList.add('d-none');
   const cubeArtsView = document.getElementById('cube-arts-view');
-  if(cubeArtsView) cubeArtsView.classList.add('d-none');
+  if (cubeArtsView) cubeArtsView.classList.add('d-none');
   const cubeArtsPlayerView = document.getElementById('cube-arts-player-view');
-  if(cubeArtsPlayerView) cubeArtsPlayerView.classList.add('d-none');
-  
+  if (cubeArtsPlayerView) cubeArtsPlayerView.classList.add('d-none');
+
   appContainer.style.display = 'block';
 
   currentMode = path;
@@ -262,19 +262,19 @@ function updateViewBasedOnRoute() {
 
   } else if (path === '/solver/3x3x3 cube' || path === '/solver/3x3x3-cube') {
     appContainer.style.display = 'none';
-    if(s3x3) s3x3.classList.remove('d-none');
+    if (s3x3) s3x3.classList.remove('d-none');
 
   } else if (path === '/solver/2x2x2 cube' || path === '/solver/2x2x2-cube') {
     appContainer.style.display = 'none';
-    if(s2x2) s2x2.classList.remove('d-none');
+    if (s2x2) s2x2.classList.remove('d-none');
 
   } else if (path === '/cube-arts') {
     appContainer.style.display = 'none';
-    if(cubeArtsView) cubeArtsView.classList.remove('d-none');
+    if (cubeArtsView) cubeArtsView.classList.remove('d-none');
 
   } else if (path.startsWith('/cube-arts/play')) {
     appContainer.style.display = 'none';
-    if(cubeArtsPlayerView) cubeArtsPlayerView.classList.remove('d-none');
+    if (cubeArtsPlayerView) cubeArtsPlayerView.classList.remove('d-none');
 
   } else {
     // Other routes go to coming soon
@@ -282,7 +282,7 @@ function updateViewBasedOnRoute() {
     comingSoonTitle.innerText = getTitleFromPath(path) || 'FEATURE';
     comingSoonView.classList.remove('d-none');
   }
-  
+
   window.dispatchEvent(new CustomEvent('route-changed', { detail: path }));
 }
 

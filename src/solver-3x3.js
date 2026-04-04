@@ -161,7 +161,7 @@ window.addEventListener('route-changed', (e) => {
   if (path === '/solver/3x3x3 cube' || path === '/solver/3x3x3-cube') {
     isActive = true;
     container.style.display = 'block';
-    
+
     scene.traverse(child => {
       if (child.userData.isSticker) {
         child.material.color.setHex(0x555555);
@@ -236,17 +236,17 @@ window.addEventListener('pointerup', (e) => {
     hit.object.material.color.setHex(selectedColorHex);
 
     const cubieGroup = hit.object.parent;
-    const absSum = Math.abs(Math.round(cubieGroup.position.x)) + 
-                   Math.abs(Math.round(cubieGroup.position.y)) + 
-                   Math.abs(Math.round(cubieGroup.position.z));
+    const absSum = Math.abs(Math.round(cubieGroup.position.x)) +
+      Math.abs(Math.round(cubieGroup.position.y)) +
+      Math.abs(Math.round(cubieGroup.position.z));
 
     if (absSum === 1 && OPPOSITE_COLORS[selectedColorHex] !== undefined) {
       const oppX = -Math.round(cubieGroup.position.x);
       const oppY = -Math.round(cubieGroup.position.y);
       const oppZ = -Math.round(cubieGroup.position.z);
-      const oppCubie = cubies.find(c => 
-        Math.round(c.position.x) === oppX && 
-        Math.round(c.position.y) === oppY && 
+      const oppCubie = cubies.find(c =>
+        Math.round(c.position.x) === oppX &&
+        Math.round(c.position.y) === oppY &&
         Math.round(c.position.z) === oppZ
       );
       if (oppCubie) {
@@ -292,7 +292,7 @@ for (let i = 0; i < ALL_COLORS.length; i++) {
 
 function autoDeducePieces() {
   let madeChanges = false;
-  
+
   const pieces = [];
   cubies.forEach(cubie => {
     const stickers = cubie.children.filter(c => c.userData && c.userData.isSticker);
@@ -313,40 +313,40 @@ function autoDeducePieces() {
   pieces.forEach(p => {
     if (p.colors.includes(0x555555)) {
       const paintedColors = p.colors.filter(c => c !== 0x555555);
-      
+
       if (p.isEdge && paintedColors.length === 1) {
         const c1 = paintedColors[0];
         const possiblePairs = VALID_EDGES.filter(pair => pair.includes(c1));
         const remainingPairs = possiblePairs.filter(pair => {
-            return !fullyPaintedEdges.some(fp => fp.includes(pair[0]) && fp.includes(pair[1]));
+          return !fullyPaintedEdges.some(fp => fp.includes(pair[0]) && fp.includes(pair[1]));
         });
-        
+
         if (remainingPairs.length === 1) {
-            const deducedColor = remainingPairs[0].find(c => c !== c1);
-            const unpaintedSticker = p.stickers.find(s => s.material.color.getHex() === 0x555555);
-            if (unpaintedSticker) {
-              unpaintedSticker.material = unpaintedSticker.material.clone();
-              unpaintedSticker.material.color.setHex(deducedColor);
-              madeChanges = true;
-            }
+          const deducedColor = remainingPairs[0].find(c => c !== c1);
+          const unpaintedSticker = p.stickers.find(s => s.material.color.getHex() === 0x555555);
+          if (unpaintedSticker) {
+            unpaintedSticker.material = unpaintedSticker.material.clone();
+            unpaintedSticker.material.color.setHex(deducedColor);
+            madeChanges = true;
+          }
         }
-      } 
+      }
       else if (p.isCorner && paintedColors.length === 2) {
         const c1 = paintedColors[0];
         const c2 = paintedColors[1];
         const possibleTriplets = VALID_CORNERS.filter(trip => trip.includes(c1) && trip.includes(c2));
         const remainingTriplets = possibleTriplets.filter(trip => {
-           return !fullyPaintedCorners.some(fp => fp.includes(trip[0]) && fp.includes(trip[1]) && fp.includes(trip[2]));
+          return !fullyPaintedCorners.some(fp => fp.includes(trip[0]) && fp.includes(trip[1]) && fp.includes(trip[2]));
         });
-        
+
         if (remainingTriplets.length === 1) {
-           const deducedColor = remainingTriplets[0].find(c => c !== c1 && c !== c2);
-           const unpaintedSticker = p.stickers.find(s => s.material.color.getHex() === 0x555555);
-           if (unpaintedSticker) {
-             unpaintedSticker.material = unpaintedSticker.material.clone();
-             unpaintedSticker.material.color.setHex(deducedColor);
-             madeChanges = true;
-           }
+          const deducedColor = remainingTriplets[0].find(c => c !== c1 && c !== c2);
+          const unpaintedSticker = p.stickers.find(s => s.material.color.getHex() === 0x555555);
+          if (unpaintedSticker) {
+            unpaintedSticker.material = unpaintedSticker.material.clone();
+            unpaintedSticker.material.color.setHex(deducedColor);
+            madeChanges = true;
+          }
         }
       }
     }
@@ -394,7 +394,7 @@ function autoFillCenters() {
   let s1 = null, s2 = null;
   for (let i = 0; i < painted.length; i++) {
     for (let j = i + 1; j < painted.length; j++) {
-      if (painted[i].normal.dot(painted[j].normal) === 0) { 
+      if (painted[i].normal.dot(painted[j].normal) === 0) {
         s1 = painted[i];
         s2 = painted[j];
         break;
@@ -407,10 +407,10 @@ function autoFillCenters() {
     const v1 = CANONICAL_NORMALS[s1.color];
     const v2 = CANONICAL_NORMALS[s2.color];
     if (!v1 || !v2) return;
-    
+
     const n3 = new THREE.Vector3().crossVectors(s1.normal, s2.normal);
     const v3 = new THREE.Vector3().crossVectors(v1, v2);
-    
+
     const mapping = [
       { n: s1.normal, v: v1 },
       { n: new THREE.Vector3(-s1.normal.x, -s1.normal.y, -s1.normal.z), v: new THREE.Vector3(-v1.x, -v1.y, -v1.z) },
@@ -419,7 +419,7 @@ function autoFillCenters() {
       { n: n3, v: v3 },
       { n: new THREE.Vector3(-n3.x, -n3.y, -n3.z), v: new THREE.Vector3(-v3.x, -v3.y, -v3.z) }
     ];
-    
+
     centerStickers.forEach(cs => {
       const mapItem = mapping.find(m => m.n.equals(cs.normal));
       if (mapItem) {
@@ -553,11 +553,11 @@ function showErrorPopup(messages) {
 document.getElementById('btnStartSolve-3x3').addEventListener('click', () => {
   try {
     document.getElementById('solver-status-3x3').innerText = "Validating...";
-    
+
     const colorCounts = {};
     let hasUnpainted = false;
     const paintedPieces = [];
-    
+
     cubies.forEach(cubie => {
       const stickers = cubie.children.filter(c => c.userData && c.userData.isSticker);
       const pieceColors = [];
@@ -605,15 +605,15 @@ document.getElementById('btnStartSolve-3x3').addEventListener('click', () => {
       showErrorPopup(['Invalid center pieces detected.']);
       return;
     }
-    
+
     const centerOpposites = new Map();
     centerPieces.forEach(p => {
       const x = Math.round(p.cubie.position.x);
       const y = Math.round(p.cubie.position.y);
       const z = Math.round(p.cubie.position.z);
-      const oppP = centerPieces.find(op => 
-        Math.round(op.cubie.position.x) === -x && 
-        Math.round(op.cubie.position.y) === -y && 
+      const oppP = centerPieces.find(op =>
+        Math.round(op.cubie.position.x) === -x &&
+        Math.round(op.cubie.position.y) === -y &&
         Math.round(op.cubie.position.z) === -z
       );
       if (oppP) centerOpposites.set(p.colors[0], oppP.colors[0]);
@@ -626,11 +626,11 @@ document.getElementById('btnStartSolve-3x3').addEventListener('click', () => {
         let hasError = false;
         for (let i = 0; i < p.colors.length; i++) {
           for (let j = i + 1; j < p.colors.length; j++) {
-             const c1 = p.colors[i];
-             const c2 = p.colors[j];
-             if (centerOpposites.get(c1) === c2) {
-               hasError = true;
-             }
+            const c1 = p.colors[i];
+            const c2 = p.colors[j];
+            if (centerOpposites.get(c1) === c2) {
+              hasError = true;
+            }
           }
         }
         if (hasError) {
@@ -729,7 +729,7 @@ function updatePlaybackUI() {
   if (lastActionDirection === -1) {
     const move = solutionSteps[currentStepIndex];
     humanInstruction.innerText = getReverseHumanReadableMove(move.raw);
-    
+
     let txt = `Undo Step ${currentStepIndex + 1} / ${solutionSteps.length}: `;
     txt += `<strong style="color:#eab308">${getInverseMoveNotation(move.raw)}</strong>`;
     solutionText.innerHTML = txt;

@@ -153,7 +153,7 @@ button:active {
 .navbar {
   position: absolute;
   top: 1rem;
-  left: 1rem;
+  right: 1rem;
   z-index: 20;
   display: flex;
   gap: 0.5rem;
@@ -424,8 +424,13 @@ button:active {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .error-popup {
@@ -443,8 +448,15 @@ button:active {
 }
 
 @keyframes popIn {
-  from { transform: scale(0.9); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .error-popup h3 {
@@ -558,6 +570,7 @@ button:active {
 }
 
 /* --- Cube Arts Section (Merged) --- */
+/* --- Cube Arts Section --- */
 #cube-arts-view {
   position: absolute;
   top: 0;
@@ -566,113 +579,203 @@ button:active {
   height: 100vh;
   z-index: 10;
   overflow-y: auto;
-  padding: 6rem 2rem 2rem 2rem;
-  /* Background inherited from body */
+  padding: 6rem 2rem 4rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .cube-arts-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
+  text-align: center;
+  max-width: 800px;
+  margin-bottom: 3rem;
+  animation: fadeInDown 0.8s ease-out;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .cube-arts-header h2 {
-  font-size: 2rem;
+  font-size: 3rem;
   font-weight: 700;
+  margin-bottom: 1rem;
   background: linear-gradient(135deg, #60a5fa, #c084fc);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+  text-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
-.filters {
+.cube-arts-description {
+  font-size: 1.1rem;
+  color: #94a3b8;
+  line-height: 1.6;
+}
+
+.cube-arts-content {
   display: flex;
-  gap: 1rem;
+  gap: 3rem;
+  width: 100%;
+  max-width: 1400px;
+  align-items: flex-start;
 }
 
-.filters select {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #fff;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  font-size: 1rem;
-  outline: none;
+/* Sidebar Styling */
+.cube-arts-sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 1.5rem;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  position: sticky;
+  top: 1rem;
+}
+
+.sidebar-section {
+  margin-bottom: 2rem;
+}
+
+.sidebar-section:last-child {
+  margin-bottom: 0;
+}
+
+.sidebar-section h3 {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #64748b;
+  margin-bottom: 1rem;
+  padding-left: 0.5rem;
+  font-weight: 600;
+}
+
+.sidebar-item {
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
   cursor: pointer;
-  backdrop-filter: blur(10px);
+  color: #94a3b8;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  margin-bottom: 0.25rem;
+  border: 1px solid transparent;
 }
 
-.filters select option {
-  background: #1e293b;
-  color: #fff;
+.sidebar-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #f8fafc;
 }
 
+.sidebar-item.active {
+  background: rgba(96, 165, 250, 0.15);
+  color: #60a5fa;
+  border-color: rgba(96, 165, 250, 0.3);
+  font-weight: 500;
+}
+
+/* Grid and Cards */
 .cube-arts-grid {
+  flex: 1;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
 }
 
 .cube-art-card {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
   overflow: hidden;
   cursor: pointer;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   flex-direction: column;
 }
 
 .cube-art-card:hover {
-  transform: translateY(-5px);
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-8px) scale(1.02);
+  background: rgba(30, 41, 59, 0.6);
+  border-color: rgba(96, 165, 250, 0.4);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(96, 165, 250, 0.1);
 }
 
 .cube-art-img {
   width: 100%;
-  height: 200px;
+  height: 220px;
   object-fit: contain;
-  background: rgba(0, 0, 0, 0.2);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  padding: 1rem;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+  padding: 1.5rem;
+  transition: transform 0.4s ease;
+}
+
+.cube-art-card:hover .cube-art-img {
+  transform: scale(1.1);
 }
 
 .cube-art-body {
   padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.2));
 }
 
 .cube-art-title {
-  font-size: 1.25rem;
+  font-size: 1.3rem;
   font-weight: 600;
   color: #f8fafc;
+  margin-bottom: 0.75rem;
 }
 
 .cube-art-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  font-size: 0.85rem;
-  color: #94a3b8;
+  gap: 0.6rem;
 }
 
 .meta-badge {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #94a3b8;
+  padding: 0.3rem 0.7rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.cube-art-card:hover .meta-badge {
+  background: rgba(96, 165, 250, 0.1);
+  color: #bae6fd;
+}
+
+@media (max-width: 1024px) {
+  .cube-arts-content {
+    flex-direction: column;
+  }
+
+  .cube-arts-sidebar {
+    width: 100%;
+    position: static;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
+
+  .sidebar-section {
+    flex: 1;
+    min-width: 200px;
+    margin-bottom: 0;
+  }
 }
 
 /* Playback Overlay Adjustments */

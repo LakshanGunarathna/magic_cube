@@ -22,14 +22,14 @@
   <nav class="navbar">
     <button class="nav-btn active" data-route="/">Home</button>
     <div class="dropdown">
-      <button class="nav-btn">Cubes ▼</button>
+      <button class="nav-btn">Cubes </button>
       <div class="dropdown-content">
         <a href="#" data-route="/cubes/3x3x3 cube">3x3x3 Cube</a>
         <a href="#" data-route="/cubes/2x2x2 cube">2x2x2 Cube</a>
       </div>
     </div>
     <div class="dropdown">
-      <button class="nav-btn">Solver ▼</button>
+      <button class="nav-btn">Solver </button>
       <div class="dropdown-content">
         <a href="#" data-route="/solver/3x3x3 cube">3x3x3 Cube</a>
         <a href="#" data-route="/solver/2x2x2 cube">2x2x2 Cube</a>
@@ -151,21 +151,29 @@
   <div id="cube-arts-view" class="d-none">
     <div class="cube-arts-header">
       <h2>Cube Arts</h2>
-      <div class="filters">
-        <select id="filterType">
-          <option value="All">All Types</option>
-          <option value="3x3x3">3x3x3</option>
-          <option value="4x4x4">4x4x4</option>
-        </select>
-        <select id="filterDifficulty">
-          <option value="All">All Difficulties</option>
-          <option value="Easy">Easy</option>
-          <option value="Medium">Medium</option>
-          <option value="Hard">Hard</option>
-        </select>
-      </div>
+      <p class="cube-arts-description">Explore a curated collection of stunning Rubik's Cube patterns. From artistic
+        designs to complex geometric shapes, learn how to transform your cube into a masterpiece.</p>
     </div>
-    <div class="cube-arts-grid" id="cubeArtsGrid"></div>
+    <div class="cube-arts-content">
+      <aside class="cube-arts-sidebar">
+        <div class="sidebar-section">
+          <div class="sidebar-item active" data-filter-type="All" data-filter-value="All">All Patterns</div>
+        </div>
+        <div class="sidebar-section">
+          <h3>Cubes</h3>
+          <div class="sidebar-item" data-filter-type="type" data-filter-value="2x2x2">2x2x2 Cube</div>
+          <div class="sidebar-item" data-filter-type="type" data-filter-value="3x3x3">3x3x3 Cube</div>
+          <div class="sidebar-item" data-filter-type="type" data-filter-value="4x4x4">4x4x4 Cube</div>
+        </div>
+        <div class="sidebar-section">
+          <h3>Difficulty</h3>
+          <div class="sidebar-item" data-filter-type="difficulty" data-filter-value="Easy">Easy</div>
+          <div class="sidebar-item" data-filter-type="difficulty" data-filter-value="Medium">Medium</div>
+          <div class="sidebar-item" data-filter-type="difficulty" data-filter-value="Hard">Hard</div>
+        </div>
+      </aside>
+      <div class="cube-arts-grid" id="cubeArtsGrid"></div>
+    </div>
   </div>
 
   <div id="cube-arts-player-view" class="d-none">
@@ -175,7 +183,7 @@
     </div>
     <button id="btnArtSideBack" class="side-nav left-nav" disabled>&lt; Back</button>
     <button id="btnArtSideNext" class="side-nav right-nav">Next &gt;</button>
-    <button id="btnViewPattern" class="action-btn primary d-none">View</button>
+    <button id="btnViewPattern" class="action-btn primary d-none">3D View</button>
   </div>
 
   <div id="patternViewOverlay" class="error-popup-overlay d-none">

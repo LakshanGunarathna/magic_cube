@@ -7,20 +7,21 @@ let patterns = [];
 
 // DOM Elements
 const gridContainer = document.getElementById('cubeArtsGrid');
-const filterTypeBtn = document.getElementById('filterType');
-const filterDiffBtn = document.getElementById('filterDifficulty');
 const btnViewPattern = document.getElementById('btnViewPattern');
 const patternViewOverlay = document.getElementById('patternViewOverlay');
 const modalCubeContainer = document.getElementById('modal-cube-container');
 const closePatternModalBtn = document.getElementById('closePatternModal');
 const modalPatternName = document.getElementById('modalPatternName');
 
+let typeFilter = 'All';
+let diffFilter = 'All';
+
 // --- UI rendering and filtering ---
 async function loadCubeArts() {
   try {
     const res = await fetch('./public/data/cube-arts.json');
     const data = await res.json();
-    
+
     // Flatten the object keys (3x3x3, 2x2x2, 4x4x4) into the patterns array
     patterns = [];
     for (const type in data) {
@@ -31,16 +32,61 @@ async function loadCubeArts() {
       });
     }
 
+    initFilters();
     renderCards();
   } catch (err) {
     console.warn("Could not load cube arts json", err);
   }
 }
 
-function renderCards() {
-  const typeFilter = filterTypeBtn.value;
-  const diffFilter = filterDiffBtn.value;
+function initFilters() {
+  const sidebarItems = document.querySelectorAll('.sidebar-item');
+  sidebarItems.forEach(item => {
+    item.addEventListener('click', () => {
+      const type = item.dataset.filterType;
+      const value = item.dataset.filterValue;
 
+      if (type === 'All') {
+        typeFilter = 'All';
+        diffFilter = 'All';
+        sidebarItems.forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+      } else {
+        // Remove "All" active state
+        document.querySelector('.sidebar-item[data-filter-type="All"]').classList.remove('active');
+        
+        if (type === 'type') {
+          if (typeFilter === value) {
+             typeFilter = 'All';
+             item.classList.remove('active');
+          } else {
+             typeFilter = value;
+             document.querySelectorAll('.sidebar-item[data-filter-type="type"]').forEach(i => i.classList.remove('active'));
+             item.classList.add('active');
+          }
+        } else if (type === 'difficulty') {
+          if (diffFilter === value) {
+            diffFilter = 'All';
+            item.classList.remove('active');
+          } else {
+            diffFilter = value;
+            document.querySelectorAll('.sidebar-item[data-filter-type="difficulty"]').forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+          }
+        }
+        
+        // If both are All, re-activate "All"
+        if (typeFilter === 'All' && diffFilter === 'All') {
+          document.querySelector('.sidebar-item[data-filter-type="All"]').classList.add('active');
+        }
+      }
+
+      renderCards();
+    });
+  });
+}
+
+function renderCards() {
   gridContainer.innerHTML = '';
 
   const filtered = patterns.filter(p => {
@@ -66,17 +112,14 @@ function renderCards() {
     el.addEventListener('click', () => {
       // Currently we only support 3x3x3 and 2x2x2 3D players. So alert if other types.
       if (p.type !== '3x3x3' && p.type !== '2x2x2') {
-         alert("3D guide is only available for 3x3x3 and 2x2x2 puzzles at the moment!");
-         return;
+        alert("3D guide is only available for 3x3x3 and 2x2x2 puzzles at the moment!");
+        return;
       }
       playPattern(p);
     });
     gridContainer.appendChild(el);
   });
 }
-
-filterTypeBtn.addEventListener('change', renderCards);
-filterDiffBtn.addEventListener('change', renderCards);
 
 // --- 3D Scene setup ---
 const container = document.getElementById('app-cube-arts');
@@ -317,13 +360,13 @@ window.addEventListener('route-changed', (e) => {
 function playPattern(p) {
   currentPattern = p;
   initCube(p.type);
-  
+
   const MOVES = p.type === '2x2x2' ? MOVES_2X2 : MOVES_3X3;
-  
+
   // Parse moves exactly as they are written to form the pattern
   const rawMovesArray = p.moves.trim().split(' ').filter(m => m);
   solutionSteps = [];
-  
+
   for (let m of rawMovesArray) {
     let face = m[0];
     let modifier = m.length > 1 ? m[1] : '';
@@ -342,7 +385,7 @@ function playPattern(p) {
 
   window.history.pushState({}, '', '/cube-arts/play/' + encodeURIComponent(p.id));
   window.dispatchEvent(new Event('popstate'));
-  
+
   container.style.display = 'block';
   updatePlaybackUI();
 }
@@ -390,7 +433,7 @@ function updatePlaybackUI() {
 
   if (currentStepIndex === 0 && lastActionDirection === 1) {
     humanInstruction.innerText = "READY TO LEARN: " + currentPattern.name.toUpperCase();
-    solutionText.innerHTML = `Hold your SOLVED Cube as shown below, hit "next" to start creating the pattern.`;
+    solutionText.innerHTML = `Hold your SOLVED Cube as shown below, press "Next" to start.`;
     btnSideBack.disabled = true;
     btnSideNext.disabled = false;
     btnSideNext.innerHTML = 'Next &gt;';
@@ -400,7 +443,7 @@ function updatePlaybackUI() {
   if (lastActionDirection === -1) {
     const move = solutionSteps[currentStepIndex];
     humanInstruction.innerText = getReverseHumanReadableMove(move.raw);
-    
+
     let txt = `Undo Step ${currentStepIndex + 1} / ${solutionSteps.length}: `;
     txt += `<strong style="color:#eab308">${getInverseMoveNotation(move.raw)}</strong>`;
     solutionText.innerHTML = txt;
@@ -422,7 +465,7 @@ function updatePlaybackUI() {
 
   if (currentStepIndex >= solutionSteps.length) {
     btnSideNext.disabled = true;
-    btnSideNext.innerHTML = 'Pattern Created!';
+    btnSideNext.innerHTML = 'Done';
   } else {
     btnSideNext.disabled = false;
     btnSideNext.innerHTML = 'Next &gt;';
@@ -431,7 +474,7 @@ function updatePlaybackUI() {
 
 function openPatternModal() {
   if (!modalRenderer) initModalScene();
-  
+
   isModalActive = true;
   patternViewOverlay.classList.remove('d-none');
   modalPatternName.innerText = currentPattern.name;
@@ -484,7 +527,7 @@ document.getElementById('btnArtSideBack').addEventListener('click', handleBack);
 btnViewPattern.addEventListener('click', openPatternModal);
 closePatternModalBtn.addEventListener('click', closePatternModal);
 patternViewOverlay.addEventListener('click', (e) => {
-    if (e.target === patternViewOverlay) closePatternModal();
+  if (e.target === patternViewOverlay) closePatternModal();
 });
 
 function animate(time) {
@@ -496,7 +539,7 @@ function animate(time) {
       renderer.render(scene, camera);
     }
   }
-  
+
   if (isModalActive && modalRenderer) {
     modalControls.update();
     modalRenderer.render(modalScene, modalCamera);
