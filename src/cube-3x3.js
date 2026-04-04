@@ -75,6 +75,7 @@ for (let x = -1; x <= 1; x++) {
     for (let z = -1; z <= 1; z++) {
       const cubieGroup = new THREE.Group();
       cubieGroup.position.set(x, y, z);
+      cubieGroup.userData.originalPos = { x, y, z };
 
       const core = new THREE.Mesh(coreGeometry, coreMaterial);
       cubieGroup.add(core);
@@ -234,11 +235,30 @@ if (resetOrientationBtn) {
   });
 }
 
+function snapReset() {
+  // Clear any existing animations or history
+  isAnimating = false;
+  moveHistory = [];
+  
+  // Snap camera and controls back instantly
+  camera.position.set(5, 5, 8);
+  controls.target.set(0, 0, 0);
+  controls.update();
+
+  // Reset all cubies to original positions and orientations
+  cubies.forEach(c => {
+    const orig = c.userData.originalPos;
+    c.position.set(orig.x, orig.y, orig.z);
+    c.quaternion.set(0, 0, 0, 1);
+  });
+}
+
 window.addEventListener('route-changed', (e) => {
   const path = e.detail;
   currentMode = path;
   if (path === '/cubes/3x3x3 cube' || path === '/cubes/3x3x3-cube') {
     isActive = true;
+    snapReset(); // Reset cube state on each visit
     controls.enableRotate = true;
     controls.enableZoom = false; // Keep zoom disabled
 

@@ -75,6 +75,7 @@ for (let x of [-0.5, 0.5]) {
     for (let z of [-0.5, 0.5]) {
       const cubieGroup = new THREE.Group();
       cubieGroup.position.set(x, y, z);
+      cubieGroup.userData.originalPos = { x, y, z };
 
       const core = new THREE.Mesh(coreGeometry, coreMaterial);
       cubieGroup.add(core);
@@ -216,10 +217,29 @@ if (resetOrientationBtn) {
   });
 }
 
+function snapReset() {
+  // Clear any existing animations or history
+  isAnimating = false;
+  moveHistory = [];
+  
+  // Snap camera and controls back instantly
+  camera.position.set(5, 5, 8);
+  controls.target.set(0, 0, 0);
+  controls.update();
+
+  // Reset all cubies to original positions and orientations
+  cubies.forEach(c => {
+    const orig = c.userData.originalPos;
+    c.position.set(orig.x, orig.y, orig.z);
+    c.quaternion.set(0, 0, 0, 1);
+  });
+}
+
 window.addEventListener('route-changed', (e) => {
   const path = e.detail;
   if (path === '/cubes/2x2x2 cube' || path === '/cubes/2x2x2-cube') {
     isActive = true;
+    snapReset(); // Reset cube state on each visit
     controls.enableRotate = true;
     controls.enableZoom = false;
   } else {
