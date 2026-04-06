@@ -26,6 +26,7 @@
       <div class="dropdown-content">
         <a href="#" data-route="/cubes/3x3x3 cube">3x3x3 Cube</a>
         <a href="#" data-route="/cubes/2x2x2 cube">2x2x2 Cube</a>
+        <a href="#" data-route="/cubes/4x4x4 cube">4x4x4 Cube</a>
       </div>
     </div>
     <div class="dropdown">
@@ -98,6 +99,59 @@
       <button id="btnD_prime-2x2">D'</button>
       <button id="btnF_prime-2x2">F'</button>
       <button id="btnB_prime-2x2">B'</button>
+    </div>
+  </div>
+
+  <div id="cube-4x4-view" class="d-none">
+    <div class="art-badge">4x4 Cube</div>
+    <div class="uicontainer-overlay">
+      <div class="controls">
+        <button id="shuffleBtn-4x4">Shuffle</button>
+        <button id="resetBtn-4x4">Reset</button>
+        <button id="resetOrientationBtn-4x4">Reset Orientation</button>
+      </div>
+    </div>
+    <div class="slice-controls-wrapper">
+      <div class="slice-controls slice-controls-4x4">
+        <button id="btnL-4x4" title="L">L</button>
+        <button id="btnR-4x4" title="R">R</button>
+        <button id="btnU-4x4" title="U">U</button>
+        <button id="btnD-4x4" title="D">D</button>
+        <button id="btnF-4x4" title="F">F</button>
+        <button id="btnB-4x4" title="B">B</button>
+        <button id="btnLw-4x4" title="Lw">Lw</button>
+        <button id="btnRw-4x4" title="Rw">Rw</button>
+        <button id="btnUw-4x4" title="Uw">Uw</button>
+        <button id="btnDw-4x4" title="Dw">Dw</button>
+        <button id="btnFw-4x4" title="Fw">Fw</button>
+        <button id="btnBw-4x4" title="Bw">Bw</button>
+        <button id="btnl-4x4" title="l">l</button>
+        <button id="btnr-4x4" title="r">r</button>
+        <button id="btnu-4x4" title="u">u</button>
+        <button id="btnd-4x4" title="d">d</button>
+        <button id="btnf-4x4" title="f">f</button>
+        <button id="btnb-4x4" title="b">b</button>
+      </div>
+      <div class="slice-controls slice-controls-4x4">
+        <button id="btnL_prime-4x4" title="L'">L'</button>
+        <button id="btnR_prime-4x4" title="R'">R'</button>
+        <button id="btnU_prime-4x4" title="U'">U'</button>
+        <button id="btnD_prime-4x4" title="D'">D'</button>
+        <button id="btnF_prime-4x4" title="F'">F'</button>
+        <button id="btnB_prime-4x4" title="B'">B'</button>
+        <button id="btnLw_prime-4x4" title="Lw'">Lw'</button>
+        <button id="btnRw_prime-4x4" title="Rw'">Rw'</button>
+        <button id="btnUw_prime-4x4" title="Uw'">Uw'</button>
+        <button id="btnDw_prime-4x4" title="Dw'">Dw'</button>
+        <button id="btnFw_prime-4x4" title="Fw'">Fw'</button>
+        <button id="btnBw_prime-4x4" title="Bw'">Bw'</button>
+        <button id="btnl_prime-4x4" title="l'">l'</button>
+        <button id="btnr_prime-4x4" title="r'">r'</button>
+        <button id="btnu_prime-4x4" title="u'">u'</button>
+        <button id="btnd_prime-4x4" title="d'">d'</button>
+        <button id="btnf_prime-4x4" title="f'">f'</button>
+        <button id="btnb_prime-4x4" title="b'">b'</button>
+      </div>
     </div>
   </div>
 
@@ -362,6 +416,7 @@
   <div id="app-3x3" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:1; display:none;"></div>
   <div id="app-2x2" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:1; display:none;"></div>
   <div id="app-4x4" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:1; display:none;"></div>
+  <div id="app-4x4-main" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:1; display:none;"></div>
   <div id="app-cube-arts" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:1; display:none;">
   </div>
   <script type="module" src="./src/main.js"></script>
@@ -371,6 +426,7 @@
   <script type="module" src="./src/solver-2x2.js"></script>
   <script type="module" src="./src/cube-arts.js"></script>
   <script type="module" src="./src/solver-4x4.js"></script>
+  <script type="module" src="./src/cube-4x4.js"></script>
 </body>
 
 </html>

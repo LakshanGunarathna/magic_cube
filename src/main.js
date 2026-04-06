@@ -5,6 +5,7 @@ const appContainer = document.getElementById('app');
 const homeView = document.getElementById('home-view');
 const cube3x3View = document.getElementById('cube-3x3-view');
 const cube2x2View = document.getElementById('cube-2x2-view');
+const cube4x4View = document.getElementById('cube-4x4-view');
 const comingSoonView = document.getElementById('coming-soon-view');
 
 const navBtns = document.querySelectorAll('.navbar [data-route]');
@@ -50,12 +51,12 @@ function updateViewBasedOnRoute() {
   }
 
   // Reset views
-  [homeView, cube3x3View, cube2x2View, comingSoonView].forEach(v => {
+  [homeView, cube3x3View, cube2x2View, cube4x4View, comingSoonView].forEach(v => {
     if (v) v.classList.add('d-none');
   });
 
   // Hide all 3D containers
-  ['app', 'app-2x2-main', 'app-3x3', 'app-2x2', 'app-4x4', 'app-cube-arts'].forEach(id => {
+  ['app', 'app-2x2-main', 'app-3x3', 'app-2x2', 'app-4x4', 'app-4x4-main', 'app-cube-arts'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
@@ -84,6 +85,11 @@ function updateViewBasedOnRoute() {
     const app2x2Main = document.getElementById('app-2x2-main');
     if (app2x2Main) app2x2Main.style.display = 'block';
     if (cube2x2View) cube2x2View.classList.remove('d-none');
+
+  } else if (path === '/cubes/4x4x4 cube' || path === '/cubes/4x4x4-cube') {
+    const app4x4Main = document.getElementById('app-4x4-main');
+    if (app4x4Main) app4x4Main.style.display = 'block';
+    if (cube4x4View) cube4x4View.classList.remove('d-none');
 
   } else if (path === '/solver/3x3x3 cube' || path === '/solver/3x3x3-cube') {
     if (s3x3) s3x3.classList.remove('d-none');
