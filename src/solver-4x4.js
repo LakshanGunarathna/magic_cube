@@ -98,6 +98,34 @@ for (let x of [-1.5, -0.5, 0.5, 1.5]) {
 
 let isAnimating = false;
 
+function rotateLayer(axis, layers, angle, duration = 300) {
+  return new Promise((resolve) => {
+    if (isAnimating && duration > 0) return;
+    isAnimating = true;
+
+    const activeCubies = cubies.filter(c => {
+      const pos = Math.round(c.position[axis] * 2) / 2;
+      return layers.some(l => Math.abs(pos - l) < 0.1);
+    });
+
+    const pivot = new THREE.Group();
+    cubeGroup.add(pivot);
+    activeCubies.forEach(c => pivot.attach(c));
+
+    if (duration > 0) {
+      new TWEEN.Tween({ val: 0 })
+        .to({ val: angle }, duration)
+        .easing(TWEEN.Easing.Quadratic.InOut)
+        .onUpdate((obj) => pivot.rotation[axis] = obj.val)
+        .onComplete(() => finishRotation(pivot, activeCubies, resolve))
+        .start();
+    } else {
+      pivot.rotation[axis] = angle;
+      finishRotation(pivot, activeCubies, resolve);
+    }
+  });
+}
+
 function finishRotation(pivot, activeCubies, resolve) {
   pivot.updateMatrixWorld();
   activeCubies.forEach(c => {
@@ -434,12 +462,328 @@ document.getElementById('btnStartSolve-4x4').addEventListener('click', () => {
     }
 
     const statusEl = document.getElementById('solver-status-4x4');
-    statusEl.innerText = "Cube is valid! Solver not implemented yet.";
+    const loadingOverlay = document.getElementById('solverLoadingOverlay-4x4');
+    
+    // Show premium loading popup
+    loadingOverlay.classList.remove('d-none');
+    statusEl.innerText = ""; // Clear the old inline status
+    
+    // We send the 96 char string!
+    const stateStr = getCubeString();
+    
+    // Setup AbortController for cancellation
+    solveAbortController = new AbortController();
+    
+    fetch('http://localhost:5000/solve', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ state: stateStr }),
+      signal: solveAbortController.signal
+    })
+    .then(res => res.json())
+    .then(data => {
+      loadingOverlay.classList.add('d-none');
+      
+      if (data.error) {
+        showErrorPopup([data.error, ...(data.details ? [data.details] : [])]);
+        return;
+      }
+      
+      let rawOut = data.solution || data.raw;
+      let moveline = rawOut.split('\n').find(l => l.includes('Solution:')) || rawOut;
+      let moveStr = moveline.replace('Solution:', '').trim();
+      
+      solutionSteps = [];
+      const movesArr = moveStr.split(' ').filter(m => m);
+      for (let m of movesArr) {
+        let mapped = mapWcaToRotation4x4(m);
+        if (mapped) {
+             solutionSteps.push({ raw: m, axis: mapped.axis, layer: mapped.layers, angle: mapped.angle });
+        }
+      }
+  
+      currentStepIndex = 0;
+      lastActionDirection = 1;
+      document.getElementById('paint-phase-4x4').classList.add('d-none');
+      document.getElementById('playback-phase-4x4').classList.remove('d-none');
+      updatePlaybackUI();
+    })
+    .catch(err => {
+      loadingOverlay.classList.add('d-none');
+      if (err.name === 'AbortError') {
+        console.log('Solve request cancelled by user.');
+        return;
+      }
+      showErrorPopup(["Could not connect to Python API.", "Run python-solver-api locally using Docker or Flask."]);
+      console.error(err);
+    });
+
   } catch (err) {
+    document.getElementById('solverLoadingOverlay-4x4').classList.add('d-none');
     showErrorPopup(['An error occurred during validation.']);
     console.error(err);
   }
 });
+
+let solveAbortController = null;
+document.getElementById('btnCancelSolve-4x4').addEventListener('click', () => {
+  if (solveAbortController) {
+    solveAbortController.abort();
+    document.getElementById('solverLoadingOverlay-4x4').classList.add('d-none');
+  }
+});
+
+let solutionSteps = [];
+let currentStepIndex = 0;
+let lastActionDirection = 1;
+
+function getCubeString() {
+  let getColor = (x, y, z, faceAxis) => {
+    const cubie = cubies.find(c => Math.abs(c.position.x - x)<0.1 && Math.abs(c.position.y - y)<0.1 && Math.abs(c.position.z - z)<0.1);
+    if (!cubie) throw new Error(`Missing cubie at ${x},${y},${z}`);
+    
+    const sticker = cubie.children.find(child => {
+      if (!child.userData || !child.userData.isSticker) return false;
+      const childWorldPos = new THREE.Vector3(); child.getWorldPosition(childWorldPos);
+      const cubieWorldPos = new THREE.Vector3(); cubie.getWorldPosition(cubieWorldPos);
+      return Math.abs(childWorldPos[faceAxis] - cubieWorldPos[faceAxis]) > 0.1;
+    });
+    if (!sticker) throw new Error(`Missing sticker on face ${faceAxis} at ${x},${y},${z}`);
+    return sticker.material.color.getHex();
+  };
+
+  const colors = {};
+  colors[white] = 'U'; colors[yellow] = 'D'; colors[red] = 'R'; 
+  colors[orange] = 'L'; colors[blue] = 'B'; colors[green] = 'F';
+
+  let str = '';
+  for (let z of [-1.5, -0.5, 0.5, 1.5]) for (let x of [-1.5, -0.5, 0.5, 1.5]) str += colors[getColor(x, 1.5, z, 'y')]; // U
+  for (let y of [1.5, 0.5, -0.5, -1.5]) for (let z of [1.5, 0.5, -0.5, -1.5]) str += colors[getColor(1.5, y, z, 'x')]; // R
+  for (let y of [1.5, 0.5, -0.5, -1.5]) for (let x of [-1.5, -0.5, 0.5, 1.5]) str += colors[getColor(x, y, 1.5, 'z')]; // F
+  for (let z of [1.5, 0.5, -0.5, -1.5]) for (let x of [-1.5, -0.5, 0.5, 1.5]) str += colors[getColor(x, -1.5, z, 'y')]; // D
+  for (let y of [1.5, 0.5, -0.5, -1.5]) for (let z of [-1.5, -0.5, 0.5, 1.5]) str += colors[getColor(-1.5, y, z, 'x')]; // L
+  for (let y of [1.5, 0.5, -0.5, -1.5]) for (let x of [1.5, 0.5, -0.5, -1.5]) str += colors[getColor(x, y, -1.5, 'z')]; // B
+  return str;
+}
+
+function mapWcaToRotation4x4(moveStr) {
+  let face = moveStr[0];
+  let mod = moveStr.substring(1);
+  
+  // Dwalton special inner slice (e.g. 2R, 2U) mapped to 'r', 'u'
+  if (['2', '3'].includes(face) && moveStr.length > 1) {
+     let innerFace = moveStr[1];
+     mod = moveStr.substring(2);
+     face = innerFace.toLowerCase(); // 2R -> r
+  }
+  
+  // Standard wide (e.g. Rw)
+  if (mod.startsWith('w')) {
+     face = face + 'w';
+     mod = mod.substring(1);
+  }
+  
+  let angleDef = 0;
+  let axis = 'y';
+  let ls = [];
+  
+  switch(face) {
+    // Outer
+    case 'U': axis = 'y'; ls = [1.5]; angleDef = -Math.PI / 2; break;
+    case 'D': axis = 'y'; ls = [-1.5]; angleDef = Math.PI / 2; break;
+    case 'L': axis = 'x'; ls = [-1.5]; angleDef = Math.PI / 2; break;
+    case 'R': axis = 'x'; ls = [1.5]; angleDef = -Math.PI / 2; break;
+    case 'F': axis = 'z'; ls = [1.5]; angleDef = -Math.PI / 2; break;
+    case 'B': axis = 'z'; ls = [-1.5]; angleDef = Math.PI / 2; break;
+    
+    // Wide
+    case 'Uw': axis = 'y'; ls = [1.5, 0.5]; angleDef = -Math.PI / 2; break;
+    case 'Dw': axis = 'y'; ls = [-1.5, -0.5]; angleDef = Math.PI / 2; break;
+    case 'Lw': axis = 'x'; ls = [-1.5, -0.5]; angleDef = Math.PI / 2; break;
+    case 'Rw': axis = 'x'; ls = [1.5, 0.5]; angleDef = -Math.PI / 2; break;
+    case 'Fw': axis = 'z'; ls = [1.5, 0.5]; angleDef = -Math.PI / 2; break;
+    case 'Bw': axis = 'z'; ls = [-1.5, -0.5]; angleDef = Math.PI / 2; break;
+    
+    // Inner
+    case 'u': axis = 'y'; ls = [0.5]; angleDef = -Math.PI / 2; break;
+    case 'd': axis = 'y'; ls = [-0.5]; angleDef = Math.PI / 2; break;
+    case 'l': axis = 'x'; ls = [-0.5]; angleDef = Math.PI / 2; break;
+    case 'r': axis = 'x'; ls = [0.5]; angleDef = -Math.PI / 2; break;
+    case 'f': axis = 'z'; ls = [0.5]; angleDef = -Math.PI / 2; break;
+    case 'b': axis = 'z'; ls = [-0.5]; angleDef = Math.PI / 2; break;
+    
+
+    // Rotations
+    case 'x': axis = 'x'; ls = [-1.5, -0.5, 0.5, 1.5]; angleDef = -Math.PI / 2; break; // Like R
+    case 'y': axis = 'y'; ls = [-1.5, -0.5, 0.5, 1.5]; angleDef = -Math.PI / 2; break; // Like U
+    case 'z': axis = 'z'; ls = [-1.5, -0.5, 0.5, 1.5]; angleDef = -Math.PI / 2; break; // Like F
+    
+    default: return null;
+  }
+  
+  let angle = angleDef;
+  if (mod.includes("'")) angle = -angleDef;
+  if (mod.includes("2")) angle = angleDef * 2;
+  
+  return { axis, layers: ls, angle };
+}
+
+const moveExplanations = {
+    "R"  : "Turn the RIGHT LAYER 90&deg; clockwise.",
+    "R'" : "Turn the RIGHT LAYER 90&deg; counterclockwise.",
+    "R2" : "Turn the RIGHT LAYER 180&deg;.",
+    "L"  : "Turn the LEFT LAYER 90&deg; clockwise.",
+    "L'" : "Turn the LEFT LAYER 90&deg; counterclockwise.",
+    "L2" : "Turn the LEFT LAYER 180&deg;.",
+    "U"  : "Turn the TOP LAYER 90&deg; clockwise.",
+    "U'" : "Turn the TOP LAYER 90&deg; counterclockwise.",
+    "U2" : "Turn the TOP LAYER 180&deg;.",
+    "D"  : "Turn the BOTTOM LAYER 90&deg; clockwise.",
+    "D'" : "Turn the BOTTOM LAYER 90&deg; counterclockwise.",
+    "D2" : "Turn the BOTTOM LAYER 180&deg;.",
+    "F"  : "Turn the FRONT LAYER 90&deg; clockwise.",
+    "F'" : "Turn the FRONT LAYER 90&deg; counterclockwise.",
+    "F2" : "Turn the FRONT LAYER 180&deg;.",
+    "B"  : "Turn the BACK LAYER 90&deg; clockwise.",
+    "B'" : "Turn the BACK LAYER 90&deg; counterclockwise.",
+    "B2" : "Turn the BACK LAYER 180&deg;.",
+    "r"  : "Turn the RIGHT HALF 90&deg; clockwise.",
+    "r'" : "Turn the RIGHT HALF 90&deg; counterclockwise.",
+    "r2" : "Turn the RIGHT HALF 180&deg;.",
+    "l"  : "Turn the LEFT HALF 90&deg; clockwise.",
+    "l'" : "Turn the LEFT HALF 90&deg; counterclockwise.",
+    "l2" : "Turn the LEFT HALF 180&deg;.",
+    "u"  : "Turn the TOP HALF 90&deg; clockwise.",
+    "u'" : "Turn the TOP HALF 90&deg; counterclockwise.",
+    "u2" : "Turn the TOP HALF 180&deg;.",
+    "d"  : "Turn the BOTTOM HALF 90&deg; clockwise.",
+    "d'" : "Turn the BOTTOM HALF 90&deg; counterclockwise.",
+    "d2" : "Turn the BOTTOM HALF 180&deg;.",
+    "f"  : "Turn the FRONT HALF 90&deg; clockwise.",
+    "f'" : "Turn the FRONT HALF 90&deg; counterclockwise.",
+    "f2" : "Turn the FRONT HALF 180&deg;.",
+    "b"  : "Turn the BACK HALF 90&deg; clockwise.",
+    "b'" : "Turn the BACK HALF 90&deg; counterclockwise.",
+    "b2" : "Turn the BACK HALF 180&deg;.",
+    "Rw" : "Turn the RIGHT TWO LAYERS 90&deg; clockwise.",
+    "Rw'": "Turn the RIGHT TWO LAYERS 90&deg; counterclockwise.",
+    "Rw2": "Turn the RIGHT TWO LAYERS 180&deg;.",
+    "Lw" : "Turn the LEFT TWO LAYERS 90&deg; clockwise.",
+    "Lw'": "Turn the LEFT TWO LAYERS 90&deg; counterclockwise.",
+    "Lw2": "Turn the LEFT TWO LAYERS 180&deg;.",
+    "Uw" : "Turn the TOP TWO LAYERS 90&deg; clockwise.",
+    "Uw'": "Turn the TOP TWO LAYERS 90&deg; counterclockwise.",
+    "Uw2": "Turn the TOP TWO LAYERS 180&deg;.",
+    "Dw" : "Turn the BOTTOM TWO LAYERS 90&deg; clockwise.",
+    "Dw'": "Turn the BOTTOM TWO LAYERS 90&deg; counterclockwise.",
+    "Dw2": "Turn the BOTTOM TWO LAYERS 180&deg;.",
+    "Fw" : "Turn the FRONT TWO LAYERS 90&deg; clockwise.",
+    "Fw'": "Turn the FRONT TWO LAYERS 90&deg; counterclockwise.",
+    "Fw2": "Turn the FRONT TWO LAYERS 180&deg;.",
+    "Bw" : "Turn the BACK TWO LAYERS 90&deg; clockwise.",
+    "Bw'": "Turn the BACK TWO LAYERS 90&deg; counterclockwise.",
+    "Bw2": "Turn the BACK TWO LAYERS 180&deg;.",
+    "x"  : "Rotate the ENTIRE CUBE 90&deg; clockwise on X-axis.",
+    "x'" : "Rotate the ENTIRE CUBE 90&deg; counterclockwise on X-axis.",
+    "x2" : "Rotate the ENTIRE CUBE 180&deg; on X-axis.",
+    "y"  : "Rotate the ENTIRE CUBE 90&deg; clockwise on Y-axis.",
+    "y'" : "Rotate the ENTIRE CUBE 90&deg; counterclockwise on Y-axis.",
+    "y2" : "Rotate the ENTIRE CUBE 180&deg; on Y-axis.",
+    "z"  : "Rotate the ENTIRE CUBE 90&deg; clockwise on Z-axis.",
+    "z'" : "Rotate the ENTIRE CUBE 90&deg; counterclockwise on Z-axis.",
+    "z2" : "Rotate the ENTIRE CUBE 180&deg; on Z-axis."
+};
+
+function getExplanation(moveRaw) {
+    let mappedRaw = moveRaw;
+    if (['2', '3'].includes(moveRaw[0]) && moveRaw.length > 1) {
+        let innerFace = moveRaw[1];
+        let mod = moveRaw.substring(2);
+        mappedRaw = innerFace.toLowerCase() + mod;
+    }
+    return moveExplanations[mappedRaw] || `Execute move: ${moveRaw}`;
+}
+
+function getInverseMoveNotation(move) {
+  if (move.includes("'")) return move.replace("'", "");
+  if (move.includes("2")) return move;
+  return move + "'";
+}
+
+function getReverseExplanation(moveRaw) {
+  const inverseMove = getInverseMoveNotation(moveRaw);
+  return getExplanation(inverseMove);
+}
+
+function updatePlaybackUI() {
+  const humanInstruction = document.getElementById('humanInstruction-4x4');
+  const solutionText = document.getElementById('solutionText-4x4');
+  const btnSideBack = document.getElementById('btnSideBack-4x4');
+  const btnSideNext = document.getElementById('btnSideNext-4x4');
+  const cubeSolvedMsg = document.getElementById('cubeSolvedMsg-4x4');
+
+  if (currentStepIndex === 0 && lastActionDirection === 1) {
+    humanInstruction.innerText = "READY TO SOLVE!";
+    solutionText.innerHTML = `Hold your puzzle as shown below, hit "next" to start.`;
+    btnSideBack.disabled = true;
+    btnSideNext.disabled = false;
+    btnSideNext.innerHTML = 'Next &gt;';
+    if (cubeSolvedMsg) cubeSolvedMsg.classList.add('d-none');
+    return;
+  }
+
+  if (lastActionDirection === -1) {
+    const move = solutionSteps[currentStepIndex];
+    humanInstruction.innerHTML = getReverseExplanation(move.raw);
+    let txt = `Undo Step ${currentStepIndex + 1} / ${solutionSteps.length}: `;
+    txt += `<strong style="color:#eab308">${getInverseMoveNotation(move.raw)}</strong>`;
+    solutionText.innerHTML = txt;
+    btnSideBack.disabled = currentStepIndex <= 0;
+    btnSideNext.disabled = false;
+    btnSideNext.innerHTML = 'Next &gt;';
+    if (cubeSolvedMsg) cubeSolvedMsg.classList.add('d-none');
+    return;
+  }
+
+  const move = solutionSteps[currentStepIndex - 1];
+  humanInstruction.innerHTML = getExplanation(move.raw);
+  let txt = `Step ${currentStepIndex} / ${solutionSteps.length}: `;
+  txt += `<strong style="color:#2563eb">${move.raw}</strong>`;
+  solutionText.innerHTML = txt;
+
+  btnSideBack.disabled = false;
+
+  if (currentStepIndex >= solutionSteps.length) {
+    btnSideNext.disabled = true;
+    btnSideNext.innerHTML = 'Done!';
+    if (cubeSolvedMsg) cubeSolvedMsg.classList.remove('d-none');
+  } else {
+    btnSideNext.disabled = false;
+    btnSideNext.innerHTML = 'Next &gt;';
+    if (cubeSolvedMsg) cubeSolvedMsg.classList.add('d-none');
+  }
+}
+
+async function handleNext() {
+  if (isAnimating || currentStepIndex >= solutionSteps.length) return;
+  let move = solutionSteps[currentStepIndex];
+  lastActionDirection = 1;
+  currentStepIndex++;
+  updatePlaybackUI();
+  await rotateLayer(move.axis, move.layer, move.angle, 600);
+}
+
+async function handleBack() {
+  if (isAnimating || currentStepIndex <= 0) return;
+  currentStepIndex--;
+  lastActionDirection = -1;
+  let move = solutionSteps[currentStepIndex];
+  updatePlaybackUI();
+  await rotateLayer(move.axis, move.layer, -move.angle, 600);
+}
+
+document.getElementById('btnSideNext-4x4').addEventListener('click', handleNext);
+document.getElementById('btnSideBack-4x4').addEventListener('click', handleBack);
 
 // Render Loop
 function animate(time) {
