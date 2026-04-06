@@ -221,7 +221,7 @@ function snapReset() {
   // Clear any existing animations or history
   isAnimating = false;
   moveHistory = [];
-  
+
   // Snap camera and controls back instantly
   camera.position.set(5, 5, 8);
   controls.target.set(0, 0, 0);
@@ -237,7 +237,7 @@ function snapReset() {
 
 window.addEventListener('route-changed', (e) => {
   const path = e.detail;
-  if (path === '/cubes/2x2x2 cube' || path === '/cubes/2x2x2-cube') {
+  if (path === '/cubes/2x2x2-cube') {
     isActive = true;
     snapReset(); // Reset cube state on each visit
     controls.enableRotate = true;

@@ -684,7 +684,7 @@ button:active {
 .cube-arts-sidebar {
   width: 280px;
   flex-shrink: 0;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(28, 22, 200, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 24px;
   padding: 1.5rem;
@@ -962,13 +962,26 @@ button:active {
   height: 100%;
 }
 
-.cube-wireframe::before { transform: translate(10px, 10px); }
-.cube-wireframe::after { transform: translate(-10px, -10px); }
+.cube-wireframe::before {
+  transform: translate(10px, 10px);
+}
+
+.cube-wireframe::after {
+  transform: translate(-10px, -10px);
+}
 
 @keyframes cubeRotate {
-  0% { transform: translate(-50%, -50%) rotate(0deg) scale(1); }
-  50% { transform: translate(-50%, -50%) rotate(180deg) scale(1.1); }
-  100% { transform: translate(-50%, -50%) rotate(360deg) scale(1); }
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg) scale(1);
+  }
+
+  50% {
+    transform: translate(-50%, -50%) rotate(180deg) scale(1.1);
+  }
+
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg) scale(1);
+  }
 }
 
 .scanner-line {
@@ -984,10 +997,23 @@ button:active {
 }
 
 @keyframes scanMove {
-  0% { top: 0; opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { top: 100%; opacity: 0; }
+  0% {
+    top: 0;
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  90% {
+    opacity: 1;
+  }
+
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
 }
 
 /* Loading Bar */
@@ -1008,8 +1034,13 @@ button:active {
 }
 
 @keyframes loadingBarPulse {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(350%); }
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(350%);
+  }
 }
 
 .cancel-btn {

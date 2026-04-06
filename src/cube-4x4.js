@@ -191,10 +191,10 @@ const shuffleBtn = document.getElementById('shuffleBtn-4x4');
 if (shuffleBtn) {
   shuffleBtn.addEventListener('click', async () => {
     if (isAnimating || !isActive) return;
-    
+
     const BASE_KEYS = ['L', 'R', 'U', 'D', 'F', 'B', 'Lw', 'Rw', 'Uw', 'Dw', 'Fw', 'Bw', 'l', 'r', 'u', 'd', 'f', 'b', 'M', 'E', 'S'];
     let lastMove = { axis: '', layers: [], dir: 0 };
-    
+
     for (let i = 0; i < 30; i++) {
       let randomKey, m, dir;
       do {
@@ -202,7 +202,7 @@ if (shuffleBtn) {
         m = MOVES[randomKey];
         dir = Math.random() > 0.5 ? 1 : -1;
       } while (m[0] === lastMove.axis && JSON.stringify(m[1]) === JSON.stringify(lastMove.layers) && dir === -lastMove.dir);
-      
+
       lastMove = { axis: m[0], layers: m[1], dir: dir };
       await rotateLayer(m[0], m[1], m[2] * dir, 200);
     }
@@ -252,7 +252,7 @@ function snapReset() {
 
 window.addEventListener('route-changed', (e) => {
   const path = e.detail;
-  if (path === '/cubes/4x4x4 cube' || path === '/cubes/4x4x4-cube') {
+  if (path === '/cubes/4x4x4-cube') {
     isActive = true;
     snapReset();
     controls.enableRotate = true;

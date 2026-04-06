@@ -4,6 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import * as TWEEN from '@tweenjs/tween.js';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 
+
 const container = document.getElementById('app');
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
@@ -177,21 +178,21 @@ const shuffleBtn = document.getElementById('shuffleBtn');
 if (shuffleBtn) {
   shuffleBtn.addEventListener('click', async () => {
     if (isAnimating || !isActive) return;
-    
+
     // Use only base moves for cleaner picking logic
     const BASE_KEYS = ['L', 'M', 'R', 'U', 'E', 'D', 'F', 'S', 'B'];
     let lastMove = { axis: '', layer: 0, dir: 0 };
-    
+
     for (let i = 0; i < 25; i++) { // Increased shuffle count to compensate for speed
       let randomKey, m, dir;
-      
+
       // Prevent redundant inverse moves (e.g., L then L')
       do {
         randomKey = BASE_KEYS[Math.floor(Math.random() * BASE_KEYS.length)];
         m = MOVES[randomKey];
         dir = Math.random() > 0.5 ? 1 : -1;
       } while (m[0] === lastMove.axis && m[1] === lastMove.layer && dir === -lastMove.dir);
-      
+
       lastMove = { axis: m[0], layer: m[1], dir: dir };
       // Faster rotation speed (300ms) for shuffling
       await rotateLayer(m[0], m[1], m[2] * dir, 300);
@@ -221,13 +222,13 @@ const resetOrientationBtn = document.getElementById('resetOrientationBtn');
 if (resetOrientationBtn) {
   resetOrientationBtn.addEventListener('click', () => {
     if (!isActive) return;
-    
+
     // Smoothly animate camera and controls target back to original state
     new TWEEN.Tween(camera.position)
       .to({ x: 5, y: 5, z: 8 }, 500)
       .easing(TWEEN.Easing.Quadratic.Out)
       .start();
-    
+
     new TWEEN.Tween(controls.target)
       .to({ x: 0, y: 0, z: 0 }, 500)
       .easing(TWEEN.Easing.Quadratic.Out)
@@ -239,7 +240,7 @@ function snapReset() {
   // Clear any existing animations or history
   isAnimating = false;
   moveHistory = [];
-  
+
   // Snap camera and controls back instantly
   camera.position.set(5, 5, 8);
   controls.target.set(0, 0, 0);
@@ -256,7 +257,7 @@ function snapReset() {
 window.addEventListener('route-changed', (e) => {
   const path = e.detail;
   currentMode = path;
-  if (path === '/cubes/3x3x3 cube' || path === '/cubes/3x3x3-cube') {
+  if (path === '/cubes/3x3x3-cube') {
     isActive = true;
     snapReset(); // Reset cube state on each visit
     controls.enableRotate = true;

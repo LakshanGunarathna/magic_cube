@@ -6,6 +6,11 @@ import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.j
 
 let patterns = [];
 
+// Base path from Vite (e.g., '/magic_cube/' in prod, '/' with http-server)
+const BASE_PATH = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.BASE_URL)
+  ? import.meta.env.BASE_URL.replace(/\/$/, '')
+  : '';
+
 // DOM Elements
 const gridContainer = document.getElementById('cubeArtsGrid');
 const btnViewPattern = document.getElementById('btnViewPattern');
@@ -20,7 +25,7 @@ let diffFilter = 'All';
 // --- UI rendering and filtering ---
 async function loadCubeArts() {
   try {
-    const res = await fetch('./public/data/cube-arts.json');
+    const res = await fetch((import.meta.env?.BASE_URL || '/') + 'data/cube-arts.json');
     const data = await res.json();
 
     // Flatten the object keys (3x3x3, 2x2x2, 4x4x4) into the patterns array
@@ -404,8 +409,8 @@ function playPattern(p) {
 
     let moveDef = MOVES[face];
     if (!moveDef) {
-       console.warn("Unknown move notation:", face, "in", m);
-       continue;
+      console.warn("Unknown move notation:", face, "in", m);
+      continue;
     }
     let angle = moveDef[2];
     if (modifier.includes("'")) angle = -angle;
@@ -417,7 +422,7 @@ function playPattern(p) {
   currentStepIndex = 0;
   lastActionDirection = 1;
 
-  window.history.pushState({}, '', '/cube-arts/play/' + encodeURIComponent(p.id));
+  window.history.pushState({}, '', BASE_PATH + '/cube-arts/play/' + encodeURIComponent(p.id));
   window.dispatchEvent(new Event('popstate'));
 
   container.style.display = 'block';
@@ -608,6 +613,13 @@ window.addEventListener('resize', () => {
 });
 
 // Init if we load initially on this route
-if (decodeURIComponent(window.location.pathname).replace(/\/$/, "") === '/cube-arts') {
-  loadCubeArts();
-}
+(function () {
+  const raw = decodeURIComponent(window.location.pathname).replace(/\/$/, '');
+  let routePath = raw;
+  if (BASE_PATH && raw.startsWith(BASE_PATH)) {
+    routePath = raw.slice(BASE_PATH.length) || '/';
+  }
+  if (routePath === '/cube-arts') {
+    loadCubeArts();
+  }
+})();

@@ -155,7 +155,7 @@ let isActive = false;
 
 window.addEventListener('route-changed', (e) => {
   const path = e.detail;
-  if (path === '/solver/3x3x3 cube' || path === '/solver/3x3x3-cube') {
+  if (path === '/solver/3x3x3-cube') {
     isActive = true;
     container.style.display = 'block';
 
@@ -188,13 +188,13 @@ if (paletteContainer) {
     if (colorCode === white) swatch.classList.add('selected');
     swatch.dataset.color = colorCode;
     swatch.style.background = '#' + colorCode.toString(16).padStart(6, '0');
-    
+
     swatch.addEventListener('click', () => {
       swatches.forEach(s => s.classList.remove('selected'));
       swatch.classList.add('selected');
       selectedColorHex = colorCode;
     });
-    
+
     swatches.push(swatch);
     paletteContainer.appendChild(swatch);
   });

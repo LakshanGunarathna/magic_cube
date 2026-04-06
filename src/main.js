@@ -1,5 +1,27 @@
 // Mode Switching and Routing
+import './cube-3x3.js';
+import './cube-2x2.js';
+import './cube-4x4.js';
+import './solver-3x3.js';
+import './solver-2x2.js';
+import './solver-4x4.js';
+import './cube-arts.js';
+
 let currentMode = 'home';
+
+// Base path from Vite (e.g., '/magic_cube/' in prod, '/' with http-server)
+const BASE_PATH = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.BASE_URL)
+  ? import.meta.env.BASE_URL.replace(/\/$/, '')
+  : '';
+
+// Returns the route portion of the pathname, with the base prefix stripped.
+function getRoutePath() {
+  const raw = decodeURIComponent(window.location.pathname).replace(/\/$/, '');
+  if (BASE_PATH && raw.startsWith(BASE_PATH)) {
+    return raw.slice(BASE_PATH.length) || '/';
+  }
+  return raw || '/';
+}
 
 const appContainer = document.getElementById('app');
 const homeView = document.getElementById('home-view');
@@ -12,7 +34,7 @@ const navBtns = document.querySelectorAll('.navbar [data-route]');
 
 function handleNavigation(path, addToHistory = true) {
   if (addToHistory) {
-    window.history.pushState({}, '', path);
+    window.history.pushState({}, '', BASE_PATH + path);
   }
   updateViewBasedOnRoute();
 }
@@ -36,12 +58,12 @@ function getTitleFromPath(path) {
 }
 
 function updateViewBasedOnRoute() {
-  const path = decodeURIComponent(window.location.pathname).replace(/\/$/, "");
+  const path = getRoutePath();
 
   // Reset navs for both top level buttons and dropdown links
   document.querySelectorAll('.navbar .nav-btn, .navbar [data-route]').forEach(btn => btn.classList.remove('active'));
   // Find active nav and highlight
-  const activeNav = document.querySelector(`.navbar [data-route="${path || '/'}"]`);
+  const activeNav = document.querySelector(`.navbar [data-route="${path === '/' ? '/' : path}"]`);
   if (activeNav && activeNav.classList.contains('nav-btn')) {
     activeNav.classList.add('active');
   } else if (activeNav) {
@@ -77,27 +99,27 @@ function updateViewBasedOnRoute() {
   if (path === '' || path === '/') {
     homeView.classList.remove('d-none');
 
-  } else if (path === '/cubes/3x3x3 cube' || path === '/cubes/3x3x3-cube') {
+  } else if (path === '/cubes/3x3x3-cube') {
     if (appContainer) appContainer.style.display = 'block';
     if (cube3x3View) cube3x3View.classList.remove('d-none');
 
-  } else if (path === '/cubes/2x2x2 cube' || path === '/cubes/2x2x2-cube') {
+  } else if (path === '/cubes/2x2x2-cube') {
     const app2x2Main = document.getElementById('app-2x2-main');
     if (app2x2Main) app2x2Main.style.display = 'block';
     if (cube2x2View) cube2x2View.classList.remove('d-none');
 
-  } else if (path === '/cubes/4x4x4 cube' || path === '/cubes/4x4x4-cube') {
+  } else if (path === '/cubes/4x4x4-cube') {
     const app4x4Main = document.getElementById('app-4x4-main');
     if (app4x4Main) app4x4Main.style.display = 'block';
     if (cube4x4View) cube4x4View.classList.remove('d-none');
 
-  } else if (path === '/solver/3x3x3 cube' || path === '/solver/3x3x3-cube') {
+  } else if (path === '/solver/3x3x3-cube') {
     if (s3x3) s3x3.classList.remove('d-none');
 
-  } else if (path === '/solver/2x2x2 cube' || path === '/solver/2x2x2-cube') {
+  } else if (path === '/solver/2x2x2-cube') {
     if (s2x2) s2x2.classList.remove('d-none');
 
-  } else if (path === '/solver/4x4x4 cube' || path === '/solver/4x4x4-cube') {
+  } else if (path === '/solver/4x4x4-cube') {
     if (s4x4) s4x4.classList.remove('d-none');
 
   } else if (path === '/cube-arts') {
@@ -120,3 +142,4 @@ function updateViewBasedOnRoute() {
 window.addEventListener('load', () => {
   updateViewBasedOnRoute();
 });
+

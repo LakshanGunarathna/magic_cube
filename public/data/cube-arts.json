@@ -409,6 +409,13 @@
       "difficulty": "Hard",
       "moves": "R2 Rw2 L2 y R2 Rw2 L2 y U2 Uw2 D2 R2 Rw2 L2",
       "imageUrl": "/public/assets/2x2_1.png"
+    },
+    {
+      "id": "4x4#7",
+      "name": "Cube in a Cube in a Cube",
+      "difficulty": "Hard",
+      "moves": "F L F U' R U F2 L2 U' L' B D' B' L2 U Fw Lw Fw Uw' Rw Uw Fw2 Lw2 Uw' Lw' Bw Dw' Bw' Lw2 Uw",
+      "imageUrl": "/public/assets/2x2_1.png"
     }
   ]
 }
