@@ -613,6 +613,11 @@ function mapWcaToRotation4x4(moveStr) {
     case 'b': axis = 'z'; ls = [-0.5]; angleDef = Math.PI / 2; break;
     
 
+    // Middle Slices
+    case 'M': axis = 'x'; ls = [-0.5, 0.5]; angleDef = Math.PI / 2; break; // Like L
+    case 'E': axis = 'y'; ls = [-0.5, 0.5]; angleDef = Math.PI / 2; break; // Like D
+    case 'S': axis = 'z'; ls = [-0.5, 0.5]; angleDef = -Math.PI / 2; break; // Like F
+
     // Rotations
     case 'x': axis = 'x'; ls = [-1.5, -0.5, 0.5, 1.5]; angleDef = -Math.PI / 2; break; // Like R
     case 'y': axis = 'y'; ls = [-1.5, -0.5, 0.5, 1.5]; angleDef = -Math.PI / 2; break; // Like U
@@ -647,6 +652,15 @@ const moveExplanations = {
     "B"  : "Turn the BACK LAYER 90&deg; clockwise.",
     "B'" : "Turn the BACK LAYER 90&deg; counterclockwise.",
     "B2" : "Turn the BACK LAYER 180&deg;.",
+    "M"  : "Turn the MIDDLE X-SLICE 90&deg; (matches L direction).",
+    "M'" : "Turn the MIDDLE X-SLICE 90&deg; counterclockwise.",
+    "M2" : "Turn the MIDDLE X-SLICE 180&deg;.",
+    "E"  : "Turn the EQUATORIAL Y-SLICE 90&deg; (matches D direction).",
+    "E'" : "Turn the EQUATORIAL Y-SLICE 90&deg; counterclockwise.",
+    "E2" : "Turn the EQUATORIAL Y-SLICE 180&deg;.",
+    "S"  : "Turn the STANDING Z-SLICE 90&deg; (matches F direction).",
+    "S'" : "Turn the STANDING Z-SLICE 90&deg; counterclockwise.",
+    "S2" : "Turn the STANDING Z-SLICE 180&deg;.",
     "r"  : "Turn the RIGHT HALF 90&deg; clockwise.",
     "r'" : "Turn the RIGHT HALF 90&deg; counterclockwise.",
     "r2" : "Turn the RIGHT HALF 180&deg;.",

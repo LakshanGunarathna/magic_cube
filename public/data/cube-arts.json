@@ -367,5 +367,48 @@
       "imageUrl": "/public/assets/cube-arts-pong.png"
     }
   ],
-  "4x4x4": []
+  "4x4x4": [
+    {
+      "id": "4x4#1",
+      "name": "Checkerboard v1",
+      "difficulty": "Easy",
+      "moves": "U2 D2 R2 L2 F2 B2",
+      "imageUrl": "/public/assets/2x2_1.png"
+    },
+    {
+      "id": "4x4#2",
+      "name": "Checkerboard v2",
+      "difficulty": "Easy",
+      "moves": "R2 Rw2 L2 y R2 Rw2 L2 y R2 Rw2 L2 U2 Uw2 D2",
+      "imageUrl": "/public/assets/2x2_1.png"
+    },
+    {
+      "id": "4x4#3",
+      "name": "Dots",
+      "difficulty": "Easy",
+      "moves": "U D' R L' F B' U D'",
+      "imageUrl": "/public/assets/2x2_1.png"
+    },
+    {
+      "id": "4x4#4",
+      "name": "Cube in a Cube",
+      "difficulty": "Medium",
+      "moves": "F L F U' R U F2 L2 U' L' B D' B' L2 U",
+      "imageUrl": "/public/assets/2x2_1.png"
+    },
+    {
+      "id": "4x4#5",
+      "name": "Stripes",
+      "difficulty": "Hard",
+      "moves": "F R2 E' R2 B E R D2 B M' E' F' R2 U' B2 Uw2 Rw2 U2 R2 Fw2 Rw2 u2",
+      "imageUrl": "/public/assets/2x2_1.png"
+    },
+    {
+      "id": "4x4#6",
+      "name": "Lines",
+      "difficulty": "Hard",
+      "moves": "R2 Rw2 L2 y R2 Rw2 L2 y U2 Uw2 D2 R2 Rw2 L2",
+      "imageUrl": "/public/assets/2x2_1.png"
+    }
+  ]
 }

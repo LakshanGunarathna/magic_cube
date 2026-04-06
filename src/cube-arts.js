@@ -111,9 +111,9 @@ function renderCards() {
       </div>
     `;
     el.addEventListener('click', () => {
-      // Currently we only support 3x3x3 and 2x2x2 3D players. So alert if other types.
-      if (p.type !== '3x3x3' && p.type !== '2x2x2') {
-        alert("3D guide is only available for 3x3x3 and 2x2x2 puzzles at the moment!");
+      // Currently we only support 3x3x3, 2x2x2 and 4x4x4 3D players. 
+      if (p.type !== '3x3x3' && p.type !== '2x2x2' && p.type !== '4x4x4') {
+        alert("3D guide is only available for 2x2, 3x3 and 4x4 puzzles at the moment!");
         return;
       }
       playPattern(p);
@@ -225,6 +225,9 @@ function initCube(type = '3x3x3') {
   if (type === '2x2x2') {
     offsets = [-0.5, 0.5];
     cubeGroup.scale.set(1.5, 1.5, 1.5);
+  } else if (type === '4x4x4') {
+    offsets = [-1.5, -0.5, 0.5, 1.5];
+    cubeGroup.scale.set(0.8, 0.8, 0.8);
   } else {
     offsets = [-1, 0, 1];
     cubeGroup.scale.set(1, 1, 1);
@@ -246,12 +249,21 @@ function initCube(type = '3x3x3') {
           cubieGroup.add(stick);
         };
 
-        if (x > 0) addSticker(stickerGeometryX, colors.right, [0.49, 0, 0]);
-        if (x < 0) addSticker(stickerGeometryX, colors.left, [-0.49, 0, 0]);
-        if (y > 0) addSticker(stickerGeometryY, colors.top, [0, 0.49, 0]);
-        if (y < 0) addSticker(stickerGeometryY, colors.bottom, [0, -0.49, 0]);
-        if (z > 0) addSticker(stickerGeometryZ, colors.front, [0, 0, 0.49]);
-        if (z < 0) addSticker(stickerGeometryZ, colors.back, [0, 0, -0.49]);
+        if (type === '4x4x4') {
+          if (x === 1.5) addSticker(stickerGeometryX, colors.right, [0.49, 0, 0]);
+          if (x === -1.5) addSticker(stickerGeometryX, colors.left, [-0.49, 0, 0]);
+          if (y === 1.5) addSticker(stickerGeometryY, colors.top, [0, 0.49, 0]);
+          if (y === -1.5) addSticker(stickerGeometryY, colors.bottom, [0, -0.49, 0]);
+          if (z === 1.5) addSticker(stickerGeometryZ, colors.front, [0, 0, 0.49]);
+          if (z === -1.5) addSticker(stickerGeometryZ, colors.back, [0, 0, -0.49]);
+        } else {
+          if (x > 0) addSticker(stickerGeometryX, colors.right, [0.49, 0, 0]);
+          if (x < 0) addSticker(stickerGeometryX, colors.left, [-0.49, 0, 0]);
+          if (y > 0) addSticker(stickerGeometryY, colors.top, [0, 0.49, 0]);
+          if (y < 0) addSticker(stickerGeometryY, colors.bottom, [0, -0.49, 0]);
+          if (z > 0) addSticker(stickerGeometryZ, colors.front, [0, 0, 0.49]);
+          if (z < 0) addSticker(stickerGeometryZ, colors.back, [0, 0, -0.49]);
+        }
 
         cubeGroup.add(cubieGroup);
         cubies.push(cubieGroup);
@@ -270,8 +282,12 @@ function rotateLayer(axis, layer, angle, duration = 300) {
     isAnimating = true;
 
     const is2x2 = currentPattern && currentPattern.type === '2x2x2';
+    const is4x4 = currentPattern && currentPattern.type === '4x4x4';
     const activeCubies = cubies.filter(c => {
-      const pos = is2x2 ? Math.round(c.position[axis] * 2) / 2 : Math.round(c.position[axis]);
+      const pos = (is2x2 || is4x4) ? Math.round(c.position[axis] * 2) / 2 : Math.round(c.position[axis]);
+      if (Array.isArray(layer)) {
+        return layer.some(l => Math.abs(pos - l) < 0.1);
+      }
       return Math.abs(pos - layer) < 0.1;
     });
 
@@ -297,10 +313,11 @@ function rotateLayer(axis, layer, angle, duration = 300) {
 
 function finishRotation(pivot, activeCubies, resolve) {
   const is2x2 = currentPattern && currentPattern.type === '2x2x2';
+  const is4x4 = currentPattern && currentPattern.type === '4x4x4';
   pivot.updateMatrixWorld();
   activeCubies.forEach(c => {
     cubeGroup.attach(c);
-    if (is2x2) {
+    if (is2x2 || is4x4) {
       c.position.x = Math.round(c.position.x * 2) / 2;
       c.position.y = Math.round(c.position.y * 2) / 2;
       c.position.z = Math.round(c.position.z * 2) / 2;
@@ -324,13 +341,29 @@ function finishRotation(pivot, activeCubies, resolve) {
 const MOVES_3X3 = {
   'L': ['x', -1, Math.PI / 2], 'M': ['x', 0, Math.PI / 2], 'R': ['x', 1, -Math.PI / 2],
   'U': ['y', 1, -Math.PI / 2], 'E': ['y', 0, Math.PI / 2], 'D': ['y', -1, Math.PI / 2],
-  'F': ['z', 1, -Math.PI / 2], 'S': ['z', 0, -Math.PI / 2], 'B': ['z', -1, Math.PI / 2]
+  'F': ['z', 1, -Math.PI / 2], 'S': ['z', 0, -Math.PI / 2], 'B': ['z', -1, Math.PI / 2],
+  'x': ['x', [-1, 0, 1], -Math.PI / 2], 'y': ['y', [-1, 0, 1], -Math.PI / 2], 'z': ['z', [-1, 0, 1], -Math.PI / 2]
 };
 
 const MOVES_2X2 = {
   'L': ['x', -0.5, Math.PI / 2], 'R': ['x', 0.5, -Math.PI / 2],
   'U': ['y', 0.5, -Math.PI / 2], 'D': ['y', -0.5, Math.PI / 2],
-  'F': ['z', 0.5, -Math.PI / 2], 'B': ['z', -0.5, Math.PI / 2]
+  'F': ['z', 0.5, -Math.PI / 2], 'B': ['z', -0.5, Math.PI / 2],
+  'x': ['x', [-0.5, 0.5], -Math.PI / 2], 'y': ['y', [-0.5, 0.5], -Math.PI / 2], 'z': ['z', [-0.5, 0.5], -Math.PI / 2]
+};
+
+const MOVES_4X4 = {
+  'L': ['x', [-1.5], Math.PI / 2], 'R': ['x', [1.5], -Math.PI / 2],
+  'U': ['y', [1.5], -Math.PI / 2], 'D': ['y', [-1.5], Math.PI / 2],
+  'F': ['z', [1.5], -Math.PI / 2], 'B': ['z', [-1.5], Math.PI / 2],
+  'Lw': ['x', [-1.5, -0.5], Math.PI / 2], 'Rw': ['x', [1.5, 0.5], -Math.PI / 2],
+  'Uw': ['y', [1.5, 0.5], -Math.PI / 2], 'Dw': ['y', [-1.5, -0.5], Math.PI / 2],
+  'Fw': ['z', [1.5, 0.5], -Math.PI / 2], 'Bw': ['z', [-1.5, -0.5], Math.PI / 2],
+  'l': ['x', [-0.5], Math.PI / 2], 'r': ['x', [0.5], -Math.PI / 2],
+  'u': ['y', [0.5], -Math.PI / 2], 'd': ['y', [-0.5], Math.PI / 2],
+  'f': ['z', [0.5], -Math.PI / 2], 'b': ['z', [-0.5], Math.PI / 2],
+  'M': ['x', [-0.5, 0.5], Math.PI / 2], 'E': ['y', [-0.5, 0.5], Math.PI / 2], 'S': ['z', [-0.5, 0.5], -Math.PI / 2],
+  'x': ['x', [-1.5, -0.5, 0.5, 1.5], -Math.PI / 2], 'y': ['y', [-1.5, -0.5, 0.5, 1.5], -Math.PI / 2], 'z': ['z', [-1.5, -0.5, 0.5, 1.5], -Math.PI / 2]
 };
 
 let isActive = false;
@@ -359,21 +392,24 @@ function playPattern(p) {
   currentPattern = p;
   initCube(p.type);
 
-  const MOVES = p.type === '2x2x2' ? MOVES_2X2 : MOVES_3X3;
+  const MOVES = p.type === '2x2x2' ? MOVES_2X2 : (p.type === '4x4x4' ? MOVES_4X4 : MOVES_3X3);
 
   // Parse moves exactly as they are written to form the pattern
-  const rawMovesArray = p.moves.trim().split(' ').filter(m => m);
+  const rawMovesArray = p.moves.trim().split(/\s+/).filter(m => m);
   solutionSteps = [];
 
   for (let m of rawMovesArray) {
-    let face = m[0];
-    let modifier = m.length > 1 ? m[1] : '';
+    let face = m.replace(/[2']+/g, "");
+    let modifier = m.replace(/^[a-zA-Z]+/g, "");
 
     let moveDef = MOVES[face];
-    if (!moveDef) continue;
+    if (!moveDef) {
+       console.warn("Unknown move notation:", face, "in", m);
+       continue;
+    }
     let angle = moveDef[2];
-    if (modifier === "'") angle = -angle;
-    if (modifier === "2") angle = angle * 2;
+    if (modifier.includes("'")) angle = -angle;
+    if (modifier.includes("2")) angle = angle * 2;
 
     solutionSteps.push({ raw: m, axis: moveDef[0], layer: moveDef[1], angle: angle });
   }
@@ -388,31 +424,37 @@ function playPattern(p) {
   updatePlaybackUI();
 }
 
-const FACE_NAMES = { 'U': 'TOP', 'D': 'BOTTOM', 'F': 'FRONT', 'B': 'BACK', 'L': 'LEFT', 'R': 'RIGHT', 'M': 'MIDDLE', 'E': 'EQUATOR', 'S': 'STANDING' };
+const FACE_NAMES = {
+  'U': 'TOP', 'D': 'BOTTOM', 'F': 'FRONT', 'B': 'BACK', 'L': 'LEFT', 'R': 'RIGHT',
+  'M': 'MIDDLE', 'E': 'EQUATOR', 'S': 'STANDING',
+  'l': 'LEFT INNER', 'r': 'RIGHT INNER', 'u': 'TOP INNER', 'd': 'BOTTOM INNER', 'f': 'FRONT INNER', 'b': 'BACK INNER',
+  'Lw': 'LEFT WIDE', 'Rw': 'RIGHT WIDE', 'Uw': 'TOP WIDE', 'Dw': 'BOTTOM WIDE', 'Fw': 'FRONT WIDE', 'Bw': 'BACK WIDE',
+  'x': 'ENTIRE CUBE (X-axis)', 'y': 'ENTIRE CUBE (Y-axis)', 'z': 'ENTIRE CUBE (Z-axis)'
+};
 
 function getHumanReadableMove(rawMove) {
-  const face = rawMove[0];
-  const mod = rawMove.length > 1 ? rawMove[1] : '';
-  const faceName = FACE_NAMES[face];
-  if (mod === "'") return `Turn the ${faceName} layer 90° counterclockwise.`;
-  if (mod === "2") return `Turn the ${faceName} layer 180°.`;
+  const face = rawMove.replace(/[2']+/g, "");
+  const mod = rawMove.replace(/^[a-zA-Z]+/g, "");
+  const faceName = FACE_NAMES[face] || face;
+  if (mod.includes("'")) return `Turn the ${faceName} layer 90° counterclockwise.`;
+  if (mod.includes("2")) return `Turn the ${faceName} layer 180°.`;
   return `Turn the ${faceName} layer 90° clockwise.`;
 }
 
 function getReverseHumanReadableMove(rawMove) {
-  const face = rawMove[0];
-  const mod = rawMove.length > 1 ? rawMove[1] : '';
-  const faceName = FACE_NAMES[face];
-  if (mod === "'") return `Turn the ${faceName} layer 90° clockwise.`;
-  if (mod === "2") return `Turn the ${faceName} layer 180°.`;
+  const face = rawMove.replace(/[2']+/g, "");
+  const mod = rawMove.replace(/^[a-zA-Z]+/g, "");
+  const faceName = FACE_NAMES[face] || face;
+  if (mod.includes("'")) return `Turn the ${faceName} layer 90° clockwise.`;
+  if (mod.includes("2")) return `Turn the ${faceName} layer 180°.`;
   return `Turn the ${faceName} layer 90° counterclockwise.`;
 }
 
 function getInverseMoveNotation(rawMove) {
-  const face = rawMove[0];
-  const mod = rawMove.length > 1 ? rawMove[1] : '';
-  if (mod === "'") return face;
-  if (mod === "2") return face + "2'"; // This is technically inaccurate standard notation but suitable for UI reverse indication
+  const face = rawMove.replace(/[2']+/g, "");
+  const mod = rawMove.replace(/^[a-zA-Z]+/g, "");
+  if (mod.includes("'")) return face;
+  if (mod.includes("2")) return face + "2'";
   return face + "'";
 }
 
@@ -497,6 +539,8 @@ function openPatternModal() {
   // Dynamic zoom for modal view
   if (currentPattern && currentPattern.type === '2x2x2') {
     modalCamera.position.set(2.5, 2.5, 3.75);
+  } else if (currentPattern && currentPattern.type === '4x4x4') {
+    modalCamera.position.set(4, 4, 6);
   } else {
     modalCamera.position.set(3.3, 3.3, 4.9);
   }
