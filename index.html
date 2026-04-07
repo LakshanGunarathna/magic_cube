@@ -16,37 +16,43 @@
         }
       }
     </script>
-  <script type="module" crossorigin src="/magic_cube/assets/index-CBhh3Ztz.js"></script>
-  <link rel="stylesheet" crossorigin href="/magic_cube/assets/index-DFlRj_9y.css">
+  <script type="module" crossorigin src="/magic_cube/assets/index-Dc1ARQ2n.js"></script>
+  <link rel="stylesheet" crossorigin href="/magic_cube/assets/index-DNoggGKA.css">
 </head>
 
 <body>
   <nav class="navbar">
     <button class="nav-btn active" data-route="/">Home</button>
     <div class="dropdown">
-      <button class="nav-btn">Cubes ▼</button>
+      <button class="nav-btn">Cubes </button>
       <div class="dropdown-content">
-        <a href="#" data-route="/cubes/3x3x3 cube">3x3x3 Cube</a>
-        <a href="#" data-route="/cubes/2x2x2 cube">2x2x2 Cube</a>
+        <a href="#" data-route="/cubes/3x3x3-cube">3x3x3 Cube</a>
+        <a href="#" data-route="/cubes/2x2x2-cube">2x2x2 Cube</a>
+        <a href="#" data-route="/cubes/4x4x4-cube">4x4x4 Cube</a>
       </div>
     </div>
     <div class="dropdown">
-      <button class="nav-btn">Solver ▼</button>
+      <button class="nav-btn">Solver </button>
       <div class="dropdown-content">
-        <a href="#" data-route="/solver/3x3x3 cube">3x3x3 Cube</a>
-        <a href="#" data-route="/solver/2x2x2 cube">2x2x2 Cube</a>
-        <a href="#" data-route="/solver/4x4x4 cube">4x4x4 Cube</a>
+        <a href="#" data-route="/solver/3x3x3-cube">3x3x3 Cube</a>
+        <a href="#" data-route="/solver/2x2x2-cube">2x2x2 Cube</a>
+        <a href="#" data-route="/solver/4x4x4-cube">4x4x4 Cube</a>
       </div>
     </div>
     <button class="nav-btn" data-route="/cube-arts">Cube Arts</button>
   </nav>
 
   <div id="home-view">
-    <div id="uicontainer">
-      <h1>Unscramble3D</h1>
+    <h1><span>Unscramble3D</span><br><span>Coming Soon</span></h1>
+  </div>
+
+  <div id="cube-3x3-view" class="d-none">
+    <div class="art-badge">3x3 Cube</div>
+    <div class="uicontainer-overlay">
       <div class="controls">
         <button id="shuffleBtn">Shuffle</button>
         <button id="resetBtn">Reset</button>
+        <button id="resetOrientationBtn">Reset Orientation</button>
       </div>
     </div>
     <div class="slice-controls">
@@ -59,20 +65,110 @@
       <button id="btnF">F</button>
       <button id="btnS">S</button>
       <button id="btnB">B</button>
+      <div class="divider"></div>
+      <button id="btnL_prime">L'</button>
+      <button id="btnM_prime">M'</button>
+      <button id="btnR_prime">R'</button>
+      <button id="btnU_prime">U'</button>
+      <button id="btnE_prime">E'</button>
+      <button id="btnD_prime">D'</button>
+      <button id="btnF_prime">F'</button>
+      <button id="btnS_prime">S'</button>
+      <button id="btnB_prime">B'</button>
+    </div>
+  </div>
+
+  <div id="cube-2x2-view" class="d-none">
+    <div class="art-badge">2x2 Cube</div>
+    <div class="uicontainer-overlay">
+      <div class="controls">
+        <button id="shuffleBtn-2x2">Shuffle</button>
+        <button id="resetBtn-2x2">Reset</button>
+        <button id="resetOrientationBtn-2x2">Reset Orientation</button>
+      </div>
+    </div>
+    <div class="slice-controls">
+      <button id="btnL-2x2">L</button>
+      <button id="btnR-2x2">R</button>
+      <button id="btnU-2x2">U</button>
+      <button id="btnD-2x2">D</button>
+      <button id="btnF-2x2">F</button>
+      <button id="btnB-2x2">B</button>
+      <div class="divider"></div>
+      <button id="btnL_prime-2x2">L'</button>
+      <button id="btnR_prime-2x2">R'</button>
+      <button id="btnU_prime-2x2">U'</button>
+      <button id="btnD_prime-2x2">D'</button>
+      <button id="btnF_prime-2x2">F'</button>
+      <button id="btnB_prime-2x2">B'</button>
+    </div>
+  </div>
+
+  <div id="cube-4x4-view" class="d-none">
+    <div class="art-badge">4x4 Cube</div>
+    <div class="uicontainer-overlay">
+      <div class="controls">
+        <button id="shuffleBtn-4x4">Shuffle</button>
+        <button id="resetBtn-4x4">Reset</button>
+        <button id="resetOrientationBtn-4x4">Reset Orientation</button>
+      </div>
+    </div>
+    <div class="slice-controls-wrapper">
+      <div class="slice-controls slice-controls-4x4">
+        <button id="btnL-4x4" title="L">L</button>
+        <button id="btnR-4x4" title="R">R</button>
+        <button id="btnU-4x4" title="U">U</button>
+        <button id="btnD-4x4" title="D">D</button>
+        <button id="btnF-4x4" title="F">F</button>
+        <button id="btnB-4x4" title="B">B</button>
+        <button id="btnLw-4x4" title="Lw">Lw</button>
+        <button id="btnRw-4x4" title="Rw">Rw</button>
+        <button id="btnUw-4x4" title="Uw">Uw</button>
+        <button id="btnDw-4x4" title="Dw">Dw</button>
+        <button id="btnFw-4x4" title="Fw">Fw</button>
+        <button id="btnBw-4x4" title="Bw">Bw</button>
+        <button id="btnl-4x4" title="l">l</button>
+        <button id="btnr-4x4" title="r">r</button>
+        <button id="btnu-4x4" title="u">u</button>
+        <button id="btnd-4x4" title="d">d</button>
+        <button id="btnf-4x4" title="f">f</button>
+        <button id="btnb-4x4" title="b">b</button>
+        <button id="btnM-4x4" title="M">M</button>
+        <button id="btnE-4x4" title="E">E</button>
+        <button id="btnS-4x4" title="S">S</button>
+      </div>
+      <div class="slice-controls slice-controls-4x4">
+        <button id="btnL_prime-4x4" title="L'">L'</button>
+        <button id="btnR_prime-4x4" title="R'">R'</button>
+        <button id="btnU_prime-4x4" title="U'">U'</button>
+        <button id="btnD_prime-4x4" title="D'">D'</button>
+        <button id="btnF_prime-4x4" title="F'">F'</button>
+        <button id="btnB_prime-4x4" title="B'">B'</button>
+        <button id="btnLw_prime-4x4" title="Lw'">Lw'</button>
+        <button id="btnRw_prime-4x4" title="Rw'">Rw'</button>
+        <button id="btnUw_prime-4x4" title="Uw'">Uw'</button>
+        <button id="btnDw_prime-4x4" title="Dw'">Dw'</button>
+        <button id="btnFw_prime-4x4" title="Fw'">Fw'</button>
+        <button id="btnBw_prime-4x4" title="Bw'">Bw'</button>
+        <button id="btnl_prime-4x4" title="l'">l'</button>
+        <button id="btnr_prime-4x4" title="r'">r'</button>
+        <button id="btnu_prime-4x4" title="u'">u'</button>
+        <button id="btnd_prime-4x4" title="d'">d'</button>
+        <button id="btnf_prime-4x4" title="f'">f'</button>
+        <button id="btnb_prime-4x4" title="b'">b'</button>
+        <button id="btnM_prime-4x4" title="M'">M'</button>
+        <button id="btnE_prime-4x4" title="E'">E'</button>
+        <button id="btnS_prime-4x4" title="S'">S'</button>
+      </div>
     </div>
   </div>
 
   <div id="solve-3x3-view" class="d-none">
+    <div class="art-badge">3x3 Cube Solver</div>
     <div id="paint-phase-3x3">
       <div class="palette-container" style="top: 1rem;">
         <h2>Select Color to Paint</h2>
         <div class="color-palette-3x3" style="display: flex; gap: 1rem; pointer-events: auto;">
-          <div class="swatch-3x3 swatch selected" data-color="0xFFFFFF" style="background: #FFFFFF;"></div>
-          <div class="swatch-3x3 swatch" data-color="0xFFD500" style="background: #FFD500;"></div>
-          <div class="swatch-3x3 swatch" data-color="0x0051BA" style="background: #0051BA;"></div>
-          <div class="swatch-3x3 swatch" data-color="0x009E60" style="background: #009E60;"></div>
-          <div class="swatch-3x3 swatch" data-color="0xC41E3A" style="background: #C41E3A;"></div>
-          <div class="swatch-3x3 swatch" data-color="0xFF5800" style="background: #FF5800;"></div>
         </div>
       </div>
 
@@ -94,6 +190,7 @@
     </div>
 
     <div id="playback-phase-3x3" class="d-none">
+      <div class="art-badge">3x3 Cube Solver</div>
       <div class="playback-instruction">
         <h2 id="humanInstruction-3x3">READY TO SOLVE!</h2>
         <p id="solutionText-3x3">Hold your Cube as shown below, Press "Next" to start.</p>
@@ -105,16 +202,11 @@
   </div>
 
   <div id="solve-2x2-view" class="d-none">
+    <div class="art-badge">2x2 Cube Solver</div>
     <div id="paint-phase-2x2">
       <div class="palette-container" style="top: 1rem;">
         <h2>Select Color to Paint</h2>
         <div class="color-palette-2x2" style="display: flex; gap: 1rem; pointer-events: auto;">
-          <div class="swatch-2x2 swatch selected" data-color="0xFFFFFF" style="background: #FFFFFF;"></div>
-          <div class="swatch-2x2 swatch" data-color="0xFFD500" style="background: #FFD500;"></div>
-          <div class="swatch-2x2 swatch" data-color="0x0051BA" style="background: #0051BA;"></div>
-          <div class="swatch-2x2 swatch" data-color="0x009E60" style="background: #009E60;"></div>
-          <div class="swatch-2x2 swatch" data-color="0xC41E3A" style="background: #C41E3A;"></div>
-          <div class="swatch-2x2 swatch" data-color="0xFF5800" style="background: #FF5800;"></div>
         </div>
       </div>
 
@@ -136,6 +228,7 @@
     </div>
 
     <div id="playback-phase-2x2" class="d-none">
+      <div class="art-badge">2x2 Cube Solver</div>
       <div class="playback-instruction">
         <h2 id="humanInstruction-2x2">READY TO SOLVE!</h2>
         <p id="solutionText-2x2">Hold your Cube as shown below, Press "Next" to start.</p>
@@ -146,6 +239,44 @@
     </div>
   </div>
 
+  <div id="solve-4x4-view" class="d-none">
+    <div class="art-badge">4x4 Cube Solver</div>
+    <div id="paint-phase-4x4">
+      <div class="palette-container" style="top: 1rem;">
+        <h2>Select Color to Paint</h2>
+        <div class="color-palette-4x4" style="display: flex; gap: 1rem; pointer-events: auto;">
+        </div>
+      </div>
+
+      <div class="paint-footer">
+        <button id="btnPaintReset-4x4" class="action-btn">Reset</button>
+
+        <div class="cube-rotators">
+          <button id="rotLeft-4x4" class="icon-btn">&#8592;</button>
+          <button id="rotUp-4x4" class="icon-btn">&#8593;</button>
+          <button id="rotDown-4x4" class="icon-btn">&#8595;</button>
+          <button id="rotRight-4x4" class="icon-btn">&#8594;</button>
+        </div>
+
+        <div style="display: flex; gap: 1rem; align-items: center;">
+          <p id="solver-status-4x4" class="solver-status"></p>
+          <button id="btnStartSolve-4x4" class="action-btn primary">Solve!</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="playback-phase-4x4" class="d-none">
+      <div class="art-badge">4x4 Cube Solver</div>
+      <div class="playback-instruction">
+        <h2 id="humanInstruction-4x4">COMING SOON</h2>
+        <p id="solutionText-4x4">4x4 solver is under development.</p>
+      </div>
+
+      <button id="btnSideBack-4x4" class="side-nav left-nav" disabled>&lt; Back</button>
+      <button id="btnSideNext-4x4" class="side-nav right-nav">Next &gt;</button>
+    </div>
+  </div>
+
   <div id="coming-soon-view" class="d-none">
     <h1><span id="coming-soon-title"></span><br><span>Coming Soon</span></h1>
   </div>
@@ -153,31 +284,40 @@
   <div id="cube-arts-view" class="d-none">
     <div class="cube-arts-header">
       <h2>Cube Arts</h2>
-      <div class="filters">
-        <select id="filterType">
-          <option value="All">All Types</option>
-          <option value="3x3x3">3x3x3</option>
-          <option value="4x4x4">4x4x4</option>
-        </select>
-        <select id="filterDifficulty">
-          <option value="All">All Difficulties</option>
-          <option value="Easy">Easy</option>
-          <option value="Medium">Medium</option>
-          <option value="Hard">Hard</option>
-        </select>
-      </div>
+      <p class="cube-arts-description">Explore a curated collection of stunning Rubik's Cube patterns. From artistic
+        designs to complex geometric shapes, learn how to transform your cube into a masterpiece.</p>
     </div>
-    <div class="cube-arts-grid" id="cubeArtsGrid"></div>
+    <div class="cube-arts-content">
+      <aside class="cube-arts-sidebar">
+        <div class="sidebar-section">
+          <div class="sidebar-item active" data-filter-type="All" data-filter-value="All">All Patterns</div>
+        </div>
+        <div class="sidebar-section">
+          <h3>Cubes</h3>
+          <div class="sidebar-item" data-filter-type="type" data-filter-value="2x2x2">2x2x2 Cube</div>
+          <div class="sidebar-item" data-filter-type="type" data-filter-value="3x3x3">3x3x3 Cube</div>
+          <div class="sidebar-item" data-filter-type="type" data-filter-value="4x4x4">4x4x4 Cube</div>
+        </div>
+        <div class="sidebar-section">
+          <h3>Difficulty</h3>
+          <div class="sidebar-item" data-filter-type="difficulty" data-filter-value="Easy">Easy</div>
+          <div class="sidebar-item" data-filter-type="difficulty" data-filter-value="Medium">Medium</div>
+          <div class="sidebar-item" data-filter-type="difficulty" data-filter-value="Hard">Hard</div>
+        </div>
+      </aside>
+      <div class="cube-arts-grid" id="cubeArtsGrid"></div>
+    </div>
   </div>
 
   <div id="cube-arts-player-view" class="d-none">
+    <div id="artBadge" class="art-badge"></div>
     <div class="playback-instruction" style="z-index: 10;">
       <h2 id="artInstruction">READY TO LEARN!</h2>
       <p id="artSolutionText">Hold your solved Cube as shown below, Press "Next" to start.</p>
     </div>
     <button id="btnArtSideBack" class="side-nav left-nav" disabled>&lt; Back</button>
     <button id="btnArtSideNext" class="side-nav right-nav">Next &gt;</button>
-    <button id="btnViewPattern" class="action-btn primary d-none">View</button>
+    <button id="btnViewPattern" class="action-btn primary d-none">3D View</button>
   </div>
 
   <div id="patternViewOverlay" class="error-popup-overlay d-none">
@@ -189,12 +329,13 @@
       <div id="modal-cube-container">
         <!-- 3D Scene will be injected here -->
       </div>
-      <p class="modal-footer">You can rotate and zoom to view the pattern from all sides.</p>
+      <p class="modal-footer">You can rotate to view the pattern from all sides.</p>
     </div>
   </div>
 
   <div id="cubeSolvedMsg-3x3" class="d-none cube-solved-msg">🎉 CUBE SOLVED!</div>
   <div id="cubeSolvedMsg-2x2" class="d-none cube-solved-msg">🎉 CUBE SOLVED!</div>
+  <div id="cubeSolvedMsg-4x4" class="d-none cube-solved-msg">🎉 CUBE SOLVED!</div>
 
   <div id="errorPopupOverlay-3x3" class="error-popup-overlay d-none">
     <div class="error-popup">
@@ -213,6 +354,32 @@
       <ul id="errorList-2x2"></ul>
       <p class="error-footer">After fixing the coloring issues press "Solve!" again.</p>
       <button id="errorPopupClose-2x2" class="error-popup-btn">OK</button>
+    </div>
+  </div>
+
+  <div id="errorPopupOverlay-4x4" class="error-popup-overlay d-none">
+    <div class="error-popup">
+      <h3>⚠️ Your Cube is not colored correctly</h3>
+      <p class="error-subtitle">You should consider the following:</p>
+      <ul id="errorList-4x4"></ul>
+      <p class="error-footer">After fixing the coloring issues press "Solve!" again.</p>
+      <button id="errorPopupClose-4x4" class="error-popup-btn">OK</button>
+    </div>
+  </div>
+
+  <!-- 4x4 Solver Loading Overlay -->
+  <div id="solverLoadingOverlay-4x4" class="error-popup-overlay d-none">
+    <div class="loading-popup">
+      <div class="scanner-container">
+        <div class="scanner-line"></div>
+        <div class="cube-wireframe"></div>
+      </div>
+      <h3>Finding Solution...</h3>
+      <p class="loading-subtitle">Our AI is scanning millions of possibilities to find the quickest path.</p>
+      <div class="loading-bar-container">
+        <div id="loadingBar-4x4" class="loading-bar"></div>
+      </div>
+      <button id="btnCancelSolve-4x4" class="action-btn cancel-btn">Cancel</button>
     </div>
   </div>
 
@@ -240,9 +407,24 @@
     </div>
   </div>
 
+  <div id="confirmResetOverlay-4x4" class="error-popup-overlay d-none">
+    <div class="error-popup">
+      <h3>🔄 Reset Coloring?</h3>
+      <p class="error-subtitle">If you continue your current coloring will be lost.</p>
+      <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1rem;">
+        <button id="confirmResetCancel-4x4" class="error-popup-btn">Cancel</button>
+        <button id="confirmResetOk-4x4" class="error-popup-btn"
+          style="background: rgba(220, 38, 38, 0.2) !important; border-color: rgba(220, 38, 38, 0.3) !important; color: #b91c1c !important;">Reset</button>
+      </div>
+    </div>
+  </div>
+
   <div id="app"></div>
+  <div id="app-2x2-main" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:1; display:none;"></div>
   <div id="app-3x3" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:1; display:none;"></div>
   <div id="app-2x2" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:1; display:none;"></div>
+  <div id="app-4x4" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:1; display:none;"></div>
+  <div id="app-4x4-main" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:1; display:none;"></div>
   <div id="app-cube-arts" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:1; display:none;">
   </div>
 </body>
