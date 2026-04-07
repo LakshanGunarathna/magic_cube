@@ -474,7 +474,8 @@ document.getElementById('btnStartSolve-4x4').addEventListener('click', () => {
     // Setup AbortController for cancellation
     solveAbortController = new AbortController();
 
-    fetch('http://localhost:5000/solve', {
+    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+    fetch(`${apiBaseUrl}/solve`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ state: stateStr }),
