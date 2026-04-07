@@ -1,4 +1,4 @@
-export const blue = 0x0051BA;
+export const blue = 0x2A62C9;
 export const green = 0x009E60;
 export const white = 0xFFFFFF;
 export const yellow = 0xFFD500;
